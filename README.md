@@ -1,5 +1,4 @@
-# ReBuild Vision  
-## Visual Translation for Indic Languages  
+# ReBuild Vision: Visual Translation for Indic Languages  
 
 ReBuild Vision is an end-to-end deep learning framework designed to detect, translate, remove, and reconstruct scene text embedded within images and videos. Unlike traditional subtitle-based localization systems, this project focuses on **visually embedded text** such as signboards, posters, banners, and environmental captions — enabling immersive cross-lingual adaptation for Indic languages.
 
