@@ -1,0 +1,24 @@
+# Visual Text Translation — Python dependencies
+# Install with: pip install -r requirements.txt
+
+# Core ML / vision
+torch>=2.0.0
+torchvision>=0.15.0
+opencv-python>=4.8.0
+easyocr>=1.7.0
+numpy>=1.24.0
+Pillow>=10.0.0
+scikit-image>=0.21.0
+
+# Geometry
+shapely>=2.0.0
+
+# Visualisation
+matplotlib>=3.7.0
+
+# API
+requests>=2.31.0
+sarvamai>=0.1.0
+
+# Utilities
+gdown>=4.7.0
