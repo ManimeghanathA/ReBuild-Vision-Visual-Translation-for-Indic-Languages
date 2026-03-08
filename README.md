@@ -154,8 +154,8 @@ visual_text_translation/
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/visual-text-translation.git
-cd visual-text-translation
+git clone https://github.com/ManimeghanathA/ReBuild-Vision-Visual-Translation-for-Indic-Languages
+cd ReBuild-Vision-Visual-Translation-for-Indic-Languages
 ```
 
 ### 2. Create virtual environment
