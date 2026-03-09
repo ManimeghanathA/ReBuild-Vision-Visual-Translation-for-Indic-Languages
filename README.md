@@ -118,7 +118,232 @@ Three rules are enforced for every word in the translation prompt:
 
 5. **Scope constraints** — Offline processing only. Static or slow-moving text only. Short video clips (5–15 sec). Telugu → Tamil only. No real-time inference.
 
+
 ---
+
+# Inpainting Benchmark and Text Removal Strategy
+
+## Overview
+
+This component of the project focuses on **removing detected Telugu text from images while preserving the underlying background**.
+
+After text detection and OCR are completed, the detected text regions are removed using **image inpainting** techniques. Multiple inpainting approaches are evaluated and compared against a **proposed text-aware inpainting strategy** designed specifically for scene text removal.
+
+The goal is to reconstruct the background of the image **as naturally as possible after text removal**.
+
+---
+
+# Inpainting Pipeline
+
+The inpainting stage operates on the text areas detected earlier in the system pipeline.
+
+The process is:
+
+```
+Detected Text Areas
+        │
+        ▼
+Stroke Mask Generation
+        │
+        ▼
+Combined Inpainting Mask
+        │
+        ▼
+Background Reconstruction
+        │
+        ▼
+Inpainting Quality Evaluation
+```
+
+---
+
+# Proposed Text-Aware Inpainting Strategy
+
+Standard text removal approaches often remove **entire bounding boxes** around text regions. This results in large masked areas that include both text and surrounding background.
+
+```
+[ entire bounding box removed ]
+```
+
+This forces the inpainting algorithm to reconstruct a large portion of the image, which often introduces visual artifacts.
+
+### Key Idea
+
+The proposed approach removes **only the actual text strokes**, rather than the entire bounding box.
+
+This is achieved by generating **stroke-level masks** that isolate the pixels corresponding to text characters.
+
+Instead of masking:
+
+```
+[text + surrounding background]
+```
+
+we mask only:
+
+```
+[text strokes]
+```
+
+This significantly reduces the amount of missing image information that must be reconstructed.
+
+---
+
+# Stroke Mask Construction
+
+For each detected text area:
+
+1. The quadrilateral bounding boxes produced by CRAFT are used to locate character regions.
+2. A **stroke mask** is generated that approximates the actual text pixels.
+3. These masks are merged into a single **combined inpainting mask**.
+
+The final mask contains:
+
+```
+white  → pixels to inpaint
+black  → pixels to preserve
+```
+
+This ensures that background pixels remain untouched wherever possible.
+
+---
+
+# Multi-Region Inpainting
+
+Images often contain multiple text regions.
+
+Instead of performing inpainting separately for each region, the system:
+
+1. Generates stroke masks for all detected text areas.
+2. Merges them into a single mask.
+3. Performs **one inpainting operation** over the entire image.
+
+This avoids visible seams between separately reconstructed regions.
+
+---
+
+# Noise Box Cleanup
+
+CRAFT detection may occasionally produce boxes that do not correspond to actual text.
+
+To handle this, an additional cleanup step performs **noise box inpainting**, removing small artifacts introduced by these detections.
+
+---
+
+# Baseline Inpainting Methods
+
+To evaluate the effectiveness of the proposed approach, several baseline inpainting methods were tested:
+
+* Telea Inpainting (OpenCV)
+* Navier–Stokes Inpainting (OpenCV)
+* Patch-based Exemplar Inpainting
+* LaMa Deep Learning Inpainting
+* Stable Diffusion Inpainting
+
+These methods provide a range of classical, patch-based, and deep-learning-based reconstruction techniques.
+
+---
+
+# Evaluation Metrics
+
+Inpainting quality is evaluated using several metric categories.
+
+## Global Reconstruction Metrics
+
+These measure similarity between the original image and the reconstructed image.
+
+Metrics used:
+
+* **MSE** – Mean Squared Error
+* **MAE** – Mean Absolute Error
+* **PSNR** – Peak Signal-to-Noise Ratio
+* **SSIM** – Structural Similarity Index
+
+---
+
+## Perceptual Metrics
+
+These measure perceptual similarity rather than direct pixel differences.
+
+Metrics used:
+
+* **LPIPS** – Learned Perceptual Image Patch Similarity
+* **DISTS** – Deep Image Structure and Texture Similarity
+
+---
+
+## Gradient and Edge Metrics
+
+These measure how well image structure is preserved.
+
+Metrics used:
+
+* **Gradient Error**
+* **Edge Preservation Score**
+
+---
+
+## Masked Metrics
+
+Since inpainting only affects certain regions of the image, additional metrics are computed **only inside the inpainted areas**.
+
+Metrics used:
+
+* **Masked MSE**
+* **Masked MAE**
+* **Masked PSNR**
+
+These provide a more accurate measure of reconstruction quality in the text regions.
+
+---
+
+# Benchmark Visualization
+
+To compare methods clearly, metric results are visualized using bar charts.
+
+Visualization scheme:
+
+* **Baseline methods are shown in grey**
+* **The proposed method is highlighted in red**
+
+This makes it easy to observe how the proposed approach compares across different metrics.
+
+---
+
+# Benchmark Output
+
+The benchmark produces:
+
+```
+full_inpainting_benchmark.csv
+```
+
+This file contains all evaluation metrics for each method and image.
+
+Example structure:
+
+| image    | method   | PSNR | SSIM | LPIPS | Masked_PSNR |
+| -------- | -------- | ---- | ---- | ----- | ----------- |
+| img1.jpg | telea    | ...  | ...  | ...   | ...         |
+| img1.jpg | exemplar | ...  | ...  | ...   | ...         |
+| img1.jpg | proposed | ...  | ...  | ...   | ...         |
+
+---
+
+# Summary
+
+The proposed inpainting strategy focuses on **minimizing the masked region** by targeting only the text strokes instead of entire text bounding boxes.
+
+This approach:
+
+* preserves more original background pixels
+* reduces reconstruction complexity
+* improves structural consistency in many cases
+
+The benchmarking framework evaluates this method against several classical and deep learning inpainting approaches using a wide range of reconstruction metrics.
+
+---
+
 
 ## Project Structure
 
