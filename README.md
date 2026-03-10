@@ -246,67 +246,164 @@ These methods provide a range of classical, patch-based, and deep-learning-based
 
 # Evaluation Metrics
 
-Inpainting quality is evaluated using several metric categories.
+## Overview
 
-## Global Reconstruction Metrics
+To quantitatively evaluate the effectiveness of the text removal and inpainting pipeline, we introduce a set of metrics that measure three key aspects of the system:
 
-These measure similarity between the original image and the reconstructed image.
+1. **Text Removal Effectiveness** — how well the algorithm removes detected text.
+2. **Background Reconstruction Quality** — how realistically the removed regions are filled.
+3. **Structural Continuity** — how smoothly the reconstructed region integrates with the surrounding image.
 
-Metrics used:
+These metrics are combined into a final composite score called the **Text Removal Score (TRS)**.
 
-* **MSE** – Mean Squared Error
-* **MAE** – Mean Absolute Error
-* **PSNR** – Peak Signal-to-Noise Ratio
-* **SSIM** – Structural Similarity Index
-
----
-
-## Perceptual Metrics
-
-These measure perceptual similarity rather than direct pixel differences.
-
-Metrics used:
-
-* **LPIPS** – Learned Perceptual Image Patch Similarity
-* **DISTS** – Deep Image Structure and Texture Similarity
+Evaluation is performed on each processed image using the original image, the inpainted image, and the detected text masks.
 
 ---
 
-## Gradient and Edge Metrics
+# 1. Text Removal Rate (TRR)
 
-These measure how well image structure is preserved.
+**Text Removal Rate (TRR)** measures how much of the original detected text has been successfully removed after inpainting.
 
-Metrics used:
+The metric is computed by comparing the number of text pixels before and after inpainting.
 
-* **Gradient Error**
-* **Edge Preservation Score**
+Conceptually:
+
+[
+TRR = 1 - \frac{\text{Remaining Text Pixels}}{\text{Original Text Pixels}}
+]
+
+Interpretation:
+
+| TRR Value | Meaning                                        |
+| --------- | ---------------------------------------------- |
+| **1.0**   | All detected text was removed                  |
+| **0.0**   | No text was removed                            |
+| **< 0**   | OCR falsely detected new text after inpainting |
+
+Negative values can occur when the OCR system mistakenly detects background textures as text.
 
 ---
 
-## Masked Metrics
+# 2. Background Reconstruction Metrics
 
-Since inpainting only affects certain regions of the image, additional metrics are computed **only inside the inpainted areas**.
+After text removal, the algorithm must reconstruct the background realistically. Two perceptual metrics are used to evaluate this.
 
-Metrics used:
+## Masked LPIPS (Perceptual Similarity)
 
-* **Masked MSE**
-* **Masked MAE**
-* **Masked PSNR**
+**LPIPS (Learned Perceptual Image Patch Similarity)** measures perceptual differences between two images using deep neural network features.
 
-These provide a more accurate measure of reconstruction quality in the text regions.
+The metric is computed **only inside the inpainted region**.
+
+Properties:
+
+* Lower values indicate **more perceptually similar reconstruction**
+* Captures human-perceived differences better than pixel metrics.
+
+Typical range:
+
+```
+0 → identical reconstruction
+>0.3 → noticeable visual difference
+```
 
 ---
 
-# Benchmark Visualization
+## Masked SSIM (Structural Similarity)
 
-To compare methods clearly, metric results are visualized using bar charts.
+**SSIM (Structural Similarity Index)** measures similarity in image structure, contrast, and luminance.
 
-Visualization scheme:
+This metric is also computed **only inside the removed text region**.
 
-* **Baseline methods are shown in grey**
-* **The proposed method is highlighted in red**
+Properties:
 
-This makes it easy to observe how the proposed approach compares across different metrics.
+* Range: **0 to 1**
+* Higher values indicate **better structural reconstruction**
+
+Interpretation:
+
+| SSIM        | Quality                  |
+| ----------- | ------------------------ |
+| 0.95 – 1.0  | Excellent reconstruction |
+| 0.85 – 0.95 | Good reconstruction      |
+| < 0.85      | Noticeable artifacts     |
+
+---
+
+# 3. Structural Continuity
+
+## Boundary Gradient Error
+
+Removing text should not introduce visible seams or discontinuities. To measure this, we compute the **Boundary Gradient Error**.
+
+This metric compares the gradient magnitude across the boundary between the original image and the inpainted region.
+
+It measures how smoothly edges and textures propagate across the removed region.
+
+Properties:
+
+* Lower values indicate **smoother blending**
+* Higher values indicate **visible artifacts or discontinuities**
+
+This metric is especially useful for evaluating classical PDE-based inpainting methods which focus on gradient propagation.
+
+---
+
+# 4. Final Text Removal Score (TRS)
+
+To provide a single overall evaluation metric, the individual metrics are combined into the **Text Removal Score (TRS)**.
+
+TRS balances the competing objectives of:
+
+* Removing text completely
+* Preserving perceptual realism
+* Maintaining structural continuity
+
+Conceptually:
+
+[
+TRS = f(TRR, LPIPS, SSIM, GradientError)
+]
+
+Where:
+
+* **Higher TRR improves the score**
+* **Lower LPIPS improves the score**
+* **Higher SSIM improves the score**
+* **Lower Gradient Error improves the score**
+
+Higher TRS values indicate better overall performance.
+
+---
+
+# Dataset Evaluation
+
+The evaluation was performed on a dataset of **10 Telugu signboard images**. Each image was processed using multiple inpainting methods including:
+
+* Telea Inpainting
+* Navier-Stokes Inpainting
+* Exemplar-based Inpainting
+* LaMa Inpainting
+* Stable Diffusion Inpainting
+* **Proposed Inpainting Pipeline**
+
+Metrics were computed for each image and averaged across the dataset.
+
+Example averaged results:
+
+| Method          | Avg TRR | Avg LPIPS | Avg SSIM | Avg Gradient Error | Avg TRS |
+| --------------- | ------- | --------- | -------- | ------------------ | ------- |
+| Proposed Method | -1.000  | 0.112     | 0.941    | 48.5               | 0.275   |
+| Telea           | -1.378  | 0.115     | 0.940    | 21.7               | 0.216   |
+| Navier-Stokes   | -1.301  | 0.114     | 0.940    | 19.9               | 0.222   |
+| Exemplar        | -1.273  | 0.115     | 0.940    | 24.3               | 0.325   |
+
+---
+
+# Notes on OCR-based Evaluation
+
+The evaluation relies on OCR to detect remaining text after inpainting. Because OCR models may occasionally detect background patterns as text, **TRR values can sometimes become negative**.
+
+This does not invalidate comparisons between methods because the same OCR pipeline is applied consistently across all approaches.
 
 ---
 
@@ -322,11 +419,11 @@ This file contains all evaluation metrics for each method and image.
 
 Example structure:
 
-| image    | method   | PSNR | SSIM | LPIPS | Masked_PSNR |
-| -------- | -------- | ---- | ---- | ----- | ----------- |
-| img1.jpg | telea    | ...  | ...  | ...   | ...         |
-| img1.jpg | exemplar | ...  | ...  | ...   | ...         |
-| img1.jpg | proposed | ...  | ...  | ...   | ...         |
+| image    | method   | TRR  | Masked_LPIPS | Masked_SSIM | Boundary_Gradient_Error | TRS  |
+|----------|----------|------|--------------|-------------|-------------------------|------|
+| img1.jpg | telea    | ...  | ...          | ...         | ...                     | ...  |
+| img1.jpg | exemplar | ...  | ...          | ...         | ...                     | ...  |
+| img1.jpg | proposed | ...  | ...          | ...         | ...                     | ...  |
 
 ---
 
