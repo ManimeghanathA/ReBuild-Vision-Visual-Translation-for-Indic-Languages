@@ -1,7 +1,7 @@
 # 🌐 Visual Text Translation
 ### Telugu Scene Text → Tamil | Detection · OCR · Translation · Inpainting
 
-> **2nd World Telugu Authors' Conference** — Project by  
+>  — Project by  
 > Manimeghanath A [23BAI1278] · Shriram Narayanan [23BAI1095] · Koppesh P [23BAI1113]  
 > Department of Computer Science and Engineering — VIT Chennai
 
