@@ -1,0 +1,14 @@
+[
+  {
+    "area_index": 0,
+    "area_bbox": [
+      37,
+      129,
+      710,
+      225
+    ],
+    "raw_ocr": "అలం లి తురామరజు",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text \"అలం లి తురామరజు\". First, I need to check for the specified errors.\n\nLooking at each character:\n\n1. \"అలం\" – seems correct. The 'ం' is a proper anusvara, so no issue here.\n2. \"లి\" – The 'ి' is a vowel sign. Wait, in Telugu, \"లి\" is correct, but maybe the OCR misread a conjunct? Let me think. If it's supposed to be \"లీ\" (with a long vowel), but the original might have a different matra. Alternatively, maybe the 'ి' is correct. Not sure. But the user mentioned broken vowel signs. The 'ి' here looks okay. Maybe it's correct.\n3. \"తురామరజు\" – Let's break it down. \"తురా\" – the 'ా' is a long vowel. Then \"మరజు\". Wait, \"మరజు\" – the 'జు' has a 'ు' matra. That seems correct. But maybe the OCR split a conjunct? For example, if it's \"తురామరజు\" as one word, but the original might have a different conjunct. Alternatively, maybe \"తురామరజు\" is correct. Let me check each character again.\n\nWait, the original OCR text is \"అలం లి తురామరజు\". The space between \"లి\" and \"తురామరజు\" might be a mistake. In Telugu, words are usually written without spaces. So maybe \"లి\" and \"తురామరజు\" should be combined. But the user said not to change word order or add/remove words. So perhaps the space is intentional. Alternatively, maybe \"లి\" is part of a compound word. But without more context, it's hard to say. However, the user's instructions are to fix character-level errors, not spacing. So maybe leave the space as is.\n\nLooking for digits or symbols: The text doesn't have any numbers or symbols like '@', so that's not an issue here. The vowel signs seem okay. The 'ం' in \"అలం\" is correct. The 'ి' in \"లి\" is a short vowel, which is correct. The 'ా' in \"తురా\"",
+    "tamil_translation": "அலம் லி துராமரஜு"
+  }
+]

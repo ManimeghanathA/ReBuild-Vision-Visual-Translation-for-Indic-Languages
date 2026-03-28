@@ -1,0 +1,26 @@
+[
+  {
+    "area_index": 0,
+    "area_bbox": [
+      154,
+      188,
+      281,
+      284
+    ],
+    "raw_ocr": "గ్0",
+    "corrected_telugu": "గొ",
+    "tamil_translation": "கொ"
+  },
+  {
+    "area_index": 1,
+    "area_bbox": [
+      16,
+      288,
+      403,
+      438
+    ],
+    "raw_ocr": "కదుర్లుకొ",
+    "corrected_telugu": "కదుర్లుకొ",
+    "tamil_translation": "கடுர்லுகொ"
+  }
+]

@@ -1,0 +1,86 @@
+[
+  {
+    "area_index": 0,
+    "area_bbox": [
+      190,
+      263,
+      407,
+      342
+    ],
+    "raw_ocr": "సెద్రిక",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The input is \"సెద్రిక\". First, I need to check each character for possible errors.\n\nStarting with the first character 'సె'. That looks correct. Next is 'ద్రిక'. Wait, 'ద్రిక' might be an issue. The '్రిక' part. The '్ర' here is a consonant, but in Telugu, when you have a consonant followed by a vowel sign, it should be a conjunct or a proper matra. Let me think. The correct word here is probably \"సెడ్రిక\" (Sedrika), which is the Telugu transliteration of \"Sedaka\". The OCR might have split the conjunct 'ద్ర' into 'ద్' and '్ర', but in this case, 'ద్ర' is a valid conjunct. Wait, but the original OCR has 'ద్రిక' as separate characters. Let me check the correct spelling. The correct word should be \"సెడ్రిక\" where 'ద్ర' is a conjunct. However, in the OCR text, it's written as 'ద్రిక', which would be 'drika'. But the intended word is likely \"సెడ్రిక\" (Sedrika), so the 'ద్ర' should be a conjunct. However, in the OCR output, it's split into 'ద్' and 'రిక'? Wait, no. Let me look again. The OCR text is 'సెద్రిక'. Breaking it down: సె (se), ద్ (d), రిక (rika). Wait, that's not right. The correct conjunct for 'ద్ర' is a single character. So the OCR might have split it into 'ద్' and 'రిక', which is incorrect. So the correct should be 'ద్రిక' as a conjunct. But in Telugu, 'ద్ర' is a conjunct, so the correct representation would be 'ద్రిక' as a single unit. However, in the OCR, it's written as 'ద్రిక' which is actually correct if the conjunct is properly formed. Wait, maybe the issue is that the 'ద్ర' is split into 'ద్' and 'రిక', but in the OCR text, it's 'ద్రిక' which is one character. Hmm, maybe the OCR is correct here. Alternatively, perhaps the 'రిక' part",
+    "tamil_translation": "Sedaka"
+  },
+  {
+    "area_index": 1,
+    "area_bbox": [
+      158,
+      361,
+      435,
+      388
+    ],
+    "raw_ocr": "[160 వ్మాగ9 వైగ్ుపు' ర0గ్లనో( Sపడ0డ",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: [160 వ్మాగ9 వైగ్ుపు' ర0గ్లనో( Sపడ0డ\n\nFirst, I need to check for the specified errors. Starting with digits replacing Telugu characters. The first part is [160. The '1' might be a mistake. In Telugu, '1' could be confused with 'ఒ' (o) or 'ఒ' (o) but maybe '1' is actually 'ఒ' here. Wait, but the user mentioned '0' instead of 'ొ', so maybe '1' is not in the list. Wait, the user's examples are '0' instead of 'ొ' and '6' instead of 'గ'. So maybe '1' here is not part of the specified errors. But the user's instruction says to fix digits replacing Telugu characters. So perhaps '1' is a digit that should be a Telugu character. But I'm not sure. Let me check the rest.\n\nNext, 'వ్మాగ9' – the '9' at the end. That's a digit replacing a character. The correct Telugu character here might be 'ఘ' or 'గ'? Let me think. The original word might be 'విమాగ' (vimaaga) or 'విమాగ్' (vimaag)? But '9' is a digit. Maybe it's supposed to be 'ఘ' (gha) or 'గ' (ga). But '9' looks like '9', which is not similar to any Telugu character. Wait, maybe the OCR misread a 'ఘ' as '9'? Because 'ఘ' has a loop that might look like a '9' in some fonts. So replacing '9' with 'ఘ' here.\n\nThen 'వైగ్ుపు' – 'గ్' is correct, but maybe the '్' is a conjunct. Wait, the user mentioned incorrect conjuncts. Let's see: 'వైగ్ుపు' – the 'గ్' is part of the conjunct. Maybe it's correct. But maybe the '్' is a broken vowel sign. Wait, the user said to fix broken vowel signs. Let me check each character.\n\nNext, 'ర0గ్లనో' – the '0' here is a digit replacing 'ొ",
+    "tamil_translation": "Vimaaghaa vaigupu' roglano"
+  },
+  {
+    "area_index": 2,
+    "area_bbox": [
+      160,
+      395,
+      419,
+      425
+    ],
+    "raw_ocr": "ఖగ్నిని 'giడg ప్రమారరన్ు",
+    "corrected_telugu": "ఖగ్నిని 'గిగ ప్రమారరును",
+    "tamil_translation": "Khaghnini 'giga pramaararunu"
+  },
+  {
+    "area_index": 3,
+    "area_bbox": [
+      158,
+      432,
+      400,
+      462
+    ],
+    "raw_ocr": "డగన @వ",
+    "corrected_telugu": "డగన అవ",
+    "tamil_translation": "Dagan ava"
+  },
+  {
+    "area_index": 4,
+    "area_bbox": [
+      168,
+      468,
+      288,
+      497
+    ],
+    "raw_ocr": "నొణుు గీగ్రు రెచ్ుకోదగ్లు",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"నొణుు గీగ్రు రెచ్ుకోదగ్లు\". First, I need to check for the specified errors.\n\nStarting with the first word \"నొణుు\". The 'ొ' here might be an OCR error. The correct vowel sign for 'ఓ' is 'ో', but 'ొ' is a different vowel. Wait, the original instruction says to fix digits replacing Telugu characters. The 'ొ' here is a vowel sign, but maybe it's supposed to be 'ఓ'? Or perhaps the 'ణు' part is incorrect. Wait, 'ణు' is a consonant with a vowel sign. Let me think. The correct word might be \"నోరు\" or \"నొరు\"? Hmm, but the user's example mentions '0' instead of 'ొ', but here it's 'ొ' which is a vowel. Maybe the 'ొ' is correct, but the 'ణు' part. Wait, 'ణు' is a valid consonant with a vowel sign. Maybe the OCR misread 'ణ' as 'ణు'? Or perhaps the 'ు' is a broken vowel sign. The user mentioned broken vowel signs as something to fix. So maybe 'ణు' should be 'ణు' with a proper 'ు' matra. Alternatively, maybe the entire word is supposed to be 'నోరు' (nōru) but the OCR read 'ొ' instead of 'ో'. But the user's example says to fix digits replacing characters, but here it's a vowel sign. Wait, the user's instruction says to fix broken vowel signs. So if the 'ు' in 'ణు' is broken, maybe it should be 'ణు' with a proper 'ు' matra. Alternatively, maybe the 'ొ' is correct. Let me check the next word.\n\nNext word: \"గీగ్రు\". The 'ీ' here might be correct, but the 'గ్రు' part. 'గ్రు' is a consonant cluster. But in Telugu, 'గ్రు' isn't a standard conjunct. Maybe it's supposed to be 'గ్రూ' with a proper vowel sign. Alternatively, maybe 'గీగు'? Or perhaps 'గీగ్రు' is correct. Wait, 'గీ' is 'gī', then",
+    "tamil_translation": "Noodu geegru rechukodaglu"
+  },
+  {
+    "area_index": 5,
+    "area_bbox": [
+      155,
+      507,
+      441,
+      538
+    ],
+    "raw_ocr": "@ గగ్రిగ్ుకోండున",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The input is \"@ గగ్రిగ్ుకోండున\". First, I need to check for the specified errors.\n\nThe first character is '@', which is an ASCII symbol. According to the rules, '@' should be replaced with 'అ'. So that's the first correction.\n\nNext, looking at the rest of the word: గగ్రిగ్ుకోండున. Let's break it down. The original word seems to be \"అగ్రిగముకోండున\" or something similar. The OCR has \"గ\" (ga) instead of \"అ\" (a) at the beginning. Wait, but the first character was already corrected to 'అ', so maybe the rest is okay. Wait, the original OCR text starts with '@', which becomes 'అ', then గగ్రిగ్ుకోండున. Let me check each character.\n\nThe first character after correction is 'అ'. Then 'గ' (ga), 'గ' (ga), '్రి' (ri), 'గ్' (g), 'ు' (u), 'కో' (ko), 'ండు' (ndu), 'న' (na). Wait, but the original word might be \"అగ్రిగముకోండున\" or \"అగ్రిగముకోండున\". Let me see. The OCR has గగ్రిగ్ుకోండున. The 'గ' after 'అ' might be correct. But the 'గ్' (g) with a halant (్) might be part of a conjunct. Wait, the original word could be \"అగ్రిగముకోండున\" but the OCR has గగ్రిగ్ుకోండున. Let me check each part.\n\nBreaking down the OCR text after correction: అ గ గ రి గ్ ు కో ండు ను. Wait, maybe the correct word is \"అగ్రిగముకోండున\". Let's see. The OCR has గగ్రిగ్ుకోండున. The 'గ' after 'అ' might be correct. But the 'గ్' (g) with a halant could be part of a conjunct. Wait, perhaps the correct word is \"అగ్రిగముకోండున\" but the OCR has గగ్రిగ్ుకోండున. Let me check each character:\n\nOriginal OCR",
+    "tamil_translation": "A agrigamukonduna"
+  },
+  {
+    "area_index": 6,
+    "area_bbox": [
+      163,
+      642,
+      435,
+      675
+    ],
+    "raw_ocr": "00 I] Sllll నగర్ముగిపరికారోగ్రేషస్",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text \"00 I] Sllll నగర్ముగిపరికారోగ్రేషస్\". First, I need to check for the specified errors.\n\nStarting with the digits: '00' at the beginning. The instructions mention replacing '0' with 'ొ'. So '00' should become 'ొఒ'. But wait, maybe it's supposed to be two 'ొ' characters? Or maybe the first '0' is a mistake. Let me think. In Telugu, sometimes '0' could be confused with 'ొ', which is a vowel sign. But '00' might be two 'ొ's. Alternatively, maybe the first '0' is a typo for 'ఒ', but the user's examples say '0' instead of 'ొ', so I should replace each '0' with 'ొ'. So '00' becomes 'ొఒ'.\n\nNext, the 'I]' part. The 'I' here might be a misread character. The user didn't mention 'I' as a common error, but maybe it's supposed to be a Telugu character. However, since the user's examples are about digits and symbols replacing Telugu characters, maybe 'I' is part of the original text and should stay. But the ']' is an ASCII symbol. The user's examples include replacing symbols like '@' with 'అ', so ']' should be replaced. But what's the correct Telugu character here? Maybe it's a closing bracket that's a mistake. If the original was a Telugu character, perhaps it's a conjunct or a vowel sign. But without more context, it's hard to tell. The user says if unsure, leave it. So maybe leave 'I]' as is, but the ']' is a symbol. Wait, the user's instruction says to fix ASCII symbols replacing Telugu characters. So ']' is an ASCII symbol that shouldn't be there. But what should it be? Maybe it's a misread of a Telugu character. For example, if the OCR read ']' instead of 'ః' (which is a colon-like symbol in Telugu), but that's a stretch. Alternatively, maybe it's part of a word. Since the user says not to change English words in Telugu script, but 'I]' isn't English. Hmm. Maybe the ']' is a mistake and should be removed. But the user's",
+    "tamil_translation": "Oo I] Sllll nagarmugiparikaarogreshas"
+  }
+]

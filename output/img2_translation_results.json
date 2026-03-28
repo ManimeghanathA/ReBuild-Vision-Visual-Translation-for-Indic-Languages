@@ -1,0 +1,26 @@
+[
+  {
+    "area_index": 0,
+    "area_bbox": [
+      205,
+      334,
+      1479,
+      672
+    ],
+    "raw_ocr": "తెలుగు I(aవ యు రోద్ లయయు పెదిరాబుదు- SUUtY తెలుగు ధీవనీ సమొదాయిం & వేణి హాస్కల్",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"తెలుగు I(aవ యు రోద్ లయయు పెదిరాబుదు- SUUtY తెలుగు ధీవనీ సమొదాయిం & వేణి హాస్కల్\". \n\nFirst, I need to check for digit replacements. The '0' in 'I(aవ' might be a mistake. In Telugu, '0' isn't a character, so maybe it's supposed to be 'ఒ' or another vowel. But the original word is \"I(aవ\", which seems like a mix of English and Telugu. The user said not to change English words in Telugu script, so maybe leave 'I' as is. The '0' here might be an OCR error. Looking at the context, 'aవ' could be 'ఆవ' if the '0' is replacing 'ఆ'. But the user's example mentions '0' instead of 'ొ', so maybe '0' should be 'ొ'. But 'a' is English, so perhaps the '0' is part of the English 'I'? Wait, the original has \"I(aవ\". Maybe the '0' is a typo for 'ఒ' in the Telugu part. So \"I(0వ\" becomes \"I(ఒవ\".\n\nNext, \"రోద్\" – 'రో' is correct, but 'ద్' might be a broken vowel sign. The correct conjunct here should be 'రోద్' but maybe it's 'రోద్' with a missing matra. Alternatively, 'రోద్' could be correct if it's a typo for 'రోద్' (road). Not sure. Maybe leave as is.\n\n\"లయయు\" – seems okay. \"పెదిరాబుదు\" – maybe 'పెదిరాబుదు' is correct. The hyphen and 'SUUtY' – the user said not to change English words, so leave 'SUUtY' as is. \n\n\"తెలుగు ధీవనీ సమొదాయిం\" – 'సమొదాయిం' might be 'సమోదయం' (samodayam). The 'దాయిం' part could be a broken vowel. The correct matra for 'ద' might be missing. So 'సమోదయం' instead of 'స",
+    "tamil_translation": "தெலుగు I(aவ யு ரோద్ லயయு பெదిరாபుదு- SUUtY தெலుగు தீவனி சமோதயம் & வேணி ஹாஸ்கல்"
+  },
+  {
+    "area_index": 1,
+    "area_bbox": [
+      930,
+      658,
+      1459,
+      777
+    ],
+    "raw_ocr": "కేంద్ర గ్రంథలయం",
+    "corrected_telugu": "కేంద్ర గ్రంథాలయం",
+    "tamil_translation": "மைய நூலகம்"
+  }
+]

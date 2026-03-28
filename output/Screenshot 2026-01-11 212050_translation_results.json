@@ -1,0 +1,26 @@
+[
+  {
+    "area_index": 0,
+    "area_bbox": [
+      116,
+      192,
+      253,
+      284
+    ],
+    "raw_ocr": "ఆరు",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the word \"ఆరు\". First, I need to check for any character-level errors as per the guidelines.\n\nThe word \"ఆరు\" is in Telugu. Let's break it down. The first character is \"ఆ\", which is correct. The second character is \"రు\". Wait, \"రు\" is a consonant with a vowel sign. The correct vowel sign for \"రు\" should be the \"ు\" matra. But in the OCR output, it's written as \"రు\". Let me check if there's a possible OCR error here. The \"ు\" matra is sometimes mistaken for \"ు\" or maybe another character. However, \"రు\" is actually the correct representation for the sound \"ru\". Wait, no, \"రు\" is actually the combination of \"ర\" with \"ు\" matra, which is correct. But maybe the OCR misread the matra. Let me think again. The original word is \"ఆరు\", which means \"six\". The correct Telugu for six is \"ఆరు\". The \"రు\" here is correct. Wait, but maybe the OCR misread the \"ు\" as something else. Let me check the possible errors. The user mentioned that a broken vowel sign should be fixed. If the \"ు\" is broken, maybe it's missing or misplaced. But in the given OCR text, it's \"రు\", which is correct. Hmm. Alternatively, maybe the OCR read \"రు\" as \"రు\" but the actual intended character is \"రు\" with a different matra. Wait, no. Let me confirm. The correct Telugu for six is \"ఆరు\", which is \"ఆ\" + \"రు\". The \"రు\" is correct. So perhaps there's no error here. But the user's example mentioned that '6' instead of 'గ' is a possible error. In this case, the OCR text is \"ఆరు\", which is correct. Wait, but maybe the \"రు\" is actually \"రు\" with a different matra. Let me check again. The OCR output is \"ఆరు\". The \"రు\" is correct. So maybe there's no error here. But the user's instruction says to fix broken vowel signs. If the \"ు\" is broken, maybe it's missing. But in the given text, it's present. Alternatively, maybe the OCR misread the \"ు\" as another",
+    "tamil_translation": "ஆறு"
+  },
+  {
+    "area_index": 1,
+    "area_bbox": [
+      9,
+      296,
+      357,
+      426
+    ],
+    "raw_ocr": "మJtiుSu",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text \"మJtiుSu\". First, I need to check for the common OCR errors mentioned.\n\nLooking at the characters: the first character is 'మ', which is correct. The next is 'J'—that's an ASCII character. The user mentioned that ASCII symbols replacing Telugu characters should be fixed. 'J' might be a mistake for 'జ' (ja) or another similar character. But 'జ' is usually written as 'జ', so maybe 'జ' is the intended character here. Then 't' is another ASCII character. 't' could be a misread of 'త' (ta) or 'ట' (ṭa). Considering the context, maybe 'త' is more likely. Next is 'ిు' which is a vowel sign. The 'ి' is correct, but 'ు' might be a broken matra. However, 'ిు' together is correct for the vowel sign. The last character is 'S' which is another ASCII. 'S' might be 'స' (sa). \n\nPutting it together: మ + జ + త + ిు + సు. Wait, but the original has 'JtiుSu'. So replacing J with జ, t with త, and S with స. So the corrected text would be మజ్తిుసు. But wait, the original has 'JtiుSu'—so after replacing J with జ, t with త, and S with స, it becomes మజ్తిుసు. But the original has 'iు' which is correct. Let me check again. The OCR output is మJtiుSu. So each character:\n\nమ (correct)\nJ (should be జ)\nt (should be త)\nి (correct)\nు (correct)\nS (should be స)\n\nSo replacing J with జ, t with త, S with స. So the corrected text is మజ్తిుసు. But wait, the original has 'iు' which is a vowel sign. The 'ి' is the short i, and 'ు' is the short u. So together, it's the vowel sign for iu. That's correct. So the final corrected text should be మజ్తిుసు. Let me check if there's any other possible errors. The user mentioned not to change proper nouns or English words, but here all are Telugu characters",
+    "tamil_translation": ""
+  }
+]

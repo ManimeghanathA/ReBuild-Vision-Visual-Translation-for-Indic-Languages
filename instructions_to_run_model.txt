@@ -1,0 +1,43 @@
+
+#Sarvam API key
+Sarvam: "sk_xx7l2kcm_cCpJ5u4LM2PHMJ224HLXnocW"
+
+# 1. Clone and enter CRAFT
+git clone https://github.com/clovaai/CRAFT-pytorch.git
+cd CRAFT-pytorch
+gdown https://drive.google.com/uc?id=1Jk4eGD7crsqCCg9C9VjCLkMN3ze8kutZ
+
+# 2. Patch for modern torchvision
+(Get-Content basenet/vgg16_bn.py) `
+    -replace '^from torchvision.models.vgg import model_urls', '# from torchvision.models.vgg import model_urls' `
+    | Set-Content basenet/vgg16_bn.py
+$file = Get-Content basenet/vgg16_bn.py
+$file[24] = "#" + $file[24]
+$file | Set-Content basenet/vgg16_bn.py
+(Get-Content craft.py) `
+    -replace 'vgg16_bn\(pretrained=True, freeze=True\)', 'vgg16_bn(pretrained=False, freeze=True)' `
+    | Set-Content craft.py
+
+# 3. Run CRAFT on ALL images
+python test.py --trained_model=craft_mlt_25k.pth --test_folder=../data/images --cuda=True
+cd ..
+
+# 4. Run full pipeline
+# All images
+python scripts/run_pipeline.py `
+    --image-dir  data/images `
+    --result-dir CRAFT-pytorch/result `
+    --api-key    YOUR_KEY
+
+# Specific images only
+python scripts/run_pipeline.py `
+    --image-dir  data/images `
+    --result-dir CRAFT-pytorch/result `
+    --api-key    YOUR_KEY `
+    --select     img1,img3,img7
+
+# Single image (legacy, still works)
+python scripts/run_pipeline.py `
+    --image  data/images/img7.jpeg `
+    --result CRAFT-pytorch/result/res_img7.txt `
+    --api-key YOUR_KEY

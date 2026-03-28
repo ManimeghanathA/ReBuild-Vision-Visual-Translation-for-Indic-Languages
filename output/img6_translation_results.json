@@ -1,0 +1,158 @@
+[
+  {
+    "area_index": 0,
+    "area_bbox": [
+      217,
+      58,
+      747,
+      177
+    ],
+    "raw_ocr": "@దే లదబర్ట0",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The input is \"@దే లదబర్ట0\". First, I need to check for the specified errors.\n\nStarting with the first character: '@' instead of 'అ'. The user mentioned that ASCII symbols replacing Telugu characters should be fixed. So '@' should be 'అ'. That's straightforward.\n\nNext, looking at the rest of the word: 'దే లదబర్ట0'. The '0' at the end is a digit replacing a Telugu character. The user said '0' should be 'ొ'. So replacing '0' with 'ొ' here.\n\nNow, checking for broken vowel signs or incorrect conjuncts. The word 'లదబర్ట' – let's see. 'ల' followed by 'ద' might be a conjunct. In Telugu, 'ల' and 'ద' can form a conjunct as 'ల్ద' or 'ల్దా' depending on the vowel. But here it's written as 'లదబర్ట', which might be 'లదబర్ట్' with a 'ట' at the end. Wait, the original OCR has 'లదబర్ట0', so after replacing '0' with 'ొ', it becomes 'లదబర్టొ'. Hmm, but 'బర్టొ' – maybe that's a typo. Wait, the original OCR might have 'లదబర్ట' as 'లదబర్ట్' with a 'ట' (ta) sound. But the user's instruction is only to fix character-level errors, not correct spelling. So if the OCR misread 'ట' as 'ట్' or something else, but in this case, the OCR output is 'లదబర్ట0', so replacing '0' with 'ొ' gives 'లదబర్టొ'. But 'బర్టొ' might not be a standard word. However, the user said not to change words, only fix OCR errors. So perhaps the original intended word is 'లదబర్టొ' but maybe the correct spelling is 'లదబర్ట్' with a 'ట' at the end. Wait, but the OCR has 'లదబర్ట0', so replacing '0' with 'ొ' gives 'లదబర్టొ'. But maybe the correct conjunct is 'ల్దబర్ట్'? Wait, the original O",
+    "tamil_translation": "அదే லదబర్టొ"
+  },
+  {
+    "area_index": 1,
+    "area_bbox": [
+      89,
+      166,
+      813,
+      247
+    ],
+    "raw_ocr": "కె0తమందికి బహుమ ఇచే అవకాశం",
+    "corrected_telugu": "కొత్తమందికి బహుమ ఇచ్చే అవకాశం",
+    "tamil_translation": "கொత్తமందికి బహும ఇచ్చే வாய்ப்பு"
+  },
+  {
+    "area_index": 2,
+    "area_bbox": [
+      46,
+      242,
+      784,
+      321
+    ],
+    "raw_ocr": "రావడమే పెద్ద అలాంటి వ్యక్తుల్లో",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"రావడమే పెద్ద అలాంటి వ్యక్తుల్లో\". First, I need to check for the specified errors.\n\nLooking at each character. The first word is \"రావడమే\". The 'రా' seems correct. Next, 'వడమే' – the 'వ' and 'డ' are correct. The 'మే' part: the 'ే' is a vowel sign. Wait, in Telugu, 'మే' is correct with the matra. No issues here.\n\nNext word: \"పెద్ద\". The 'పె' and 'ద్ద' look right. The 'ద్' is a consonant with a halant, which is correct. Then 'ద' again. No problems here.\n\nThird word: \"అలాంటి\". The 'అ' is present. Wait, the OCR might have an issue here. Let me check. The original OCR text has 'అలాంటి' – the 'అ' is correct. The 'లాంటి' part: 'ల' and 'ాంతి' – the 'ాం' is a vowel sign. That seems okay.\n\nLast word: \"వ్యక్తుల్లో\". The 'వ్య' is correct. 'క్తుల్' – the 'క్త్' is a conjunct. Wait, 'క్తుల్' should be 'క్తుల్' with the 'క్' and 'త్' as conjuncts. But in the OCR, is there a split? Let me see. The original is 'వ్యక్తుల్లో' – the 'క్తుల్' part. The 'క్త్' is a conjunct of క్ + త్, which is correct. The 'ల్లో' – the 'ల్' and '్లో' (with the matra) are correct.\n\nWait, but the user mentioned to check for conjuncts split incorrectly. Let me check again. 'వ్యక్తుల్లో' – the 'క్తుల్' is a conjunct of క్ + త్ + ల్. That's correct. No split there.\n\nWait, maybe the 'ల్లో' part. The 'ల్లో' is correct with the matra. No issues.\n\nWait, the original OCR text: \"రావడమే పెద్ద అలాంటి వ్యక్తుల్లో\". Let me check each character again.\n\nWait, the first word: 'రావడమ",
+    "tamil_translation": "ரావడமే பெரிய అలాంటి వ్యక్తుల్లో"
+  },
+  {
+    "area_index": 3,
+    "area_bbox": [
+      46,
+      310,
+      786,
+      382
+    ],
+    "raw_ocr": "రజనీకాంత్ ఒకరు ఓసారి ఆయన ఆరో",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"రజనీకాంత్ ఒకరు ఓసారి ఆయన ఆరో\". I need to check for character-level errors as per the guidelines.\n\nFirst, looking at \"రజనీకాంత్\" – seems correct. No obvious OCR mistakes here. Next, \"ఒకరు\" – that's \"okaru\", which is correct. Then \"ఓసారి\" – \"osari\" looks right. \"ఆయన\" is \"aayana\", correct. Now \"ఆరో\" – the last word. The user mentioned that '6' might replace 'గ', but here it's 'ఆరో'. Wait, 'ఆరో' is \"aaro\", which is correct. But maybe the OCR misread a character. Let me check each character. The first character is 'ఆ' (aa), then 'ర' (ra), then 'ో' (o). Wait, 'ఆరో' is actually \"aaro\", but maybe the intended word is \"ఆరోహణ\" or something else? No, the original OCR text is \"ఆరో\". But according to the user's examples, if there's a digit replacing a Telugu character, like '0' instead of 'ొ', but here I don't see any digits. The user also mentioned ASCII symbols replacing Telugu characters, like '@' instead of 'అ'. In this case, all characters look like proper Telugu script. The word \"ఆరో\" might be a typo, but according to the rules, if unsure, leave it as-is. The user's examples include '6' instead of 'గ', but here there's no '6'. So maybe \"ఆరో\" is correct. Alternatively, maybe the OCR misread a conjunct or a vowel sign. Let me check each character again. 'ఆ' is correct, 'ర' is correct, 'ో' is the vowel sign for 'o'. So \"ఆరో\" is correct. Therefore, no changes needed here. The original text seems okay. Wait, but the user's example says '6' instead of 'గ', but in the given OCR text, there's no '6'. So maybe the user's example is just illustrative. In the provided text, all characters are correctly recognized. Therefore, the corrected text remains the same as the OCR output.\n</think",
+    "tamil_translation": "ரజనీకాంత్ ஒకరు ஓసారి ஆயన ஆரோ"
+  },
+  {
+    "area_index": 4,
+    "area_bbox": [
+      44,
+      369,
+      910,
+      454
+    ],
+    "raw_ocr": "బాలేకపోర పఠామర్శిడ మని ఇంటికి వెళ్ల అప్పుడే",
+    "corrected_telugu": "బాలేకపోర పఠామర్శి మని ఇంటికి వెళ్ళ అప్పుడే",
+    "tamil_translation": "பாலేక போர் பாடாமర్శி மని ఇంటికి செல்ல அப்போதே"
+  },
+  {
+    "area_index": 5,
+    "area_bbox": [
+      46,
+      449,
+      794,
+      515
+    ],
+    "raw_ocr": "డాక్రలు తనను చెకప్ చేయడానికి రావడంతో",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"డాక్రలు తనను చెకప్ చేయడానికి రావడంతో\". First, I need to check for the specified errors.\n\nLooking at each character. The first word is \"డాక్రలు\". The 'క' here might be an issue. Wait, in Telugu, the correct word for \"checkup\" is \"చెకప్\". The OCR might have misread the 'క' as 'క' is correct. Wait, no, \"చెకప్\" is correct. Let me check the original OCR text again. The original has \"చెకప్\" which is correct. Wait, the user's OCR text is \"డాక్రలు తనను చెకప్ చేయడానికి రావడంతో\". Wait, the first word is \"డాక్రలు\". That doesn't look right. \"Checkup\" in Telugu is \"చెకప్\", but the first word here is \"డాక్రలు\". Maybe that's a mistake. Wait, \"డాక్రలు\" – the 'డా' part. Maybe it's supposed to be \"డాక్టర్లు\" (doctors). Let me check. The original OCR text says \"డాక్రలు\". The 'క' here might be a misread. If the intended word is \"డాక్టర్లు\", then the OCR might have misread 'క్ట' as 'క్ర'. But according to the rules, I can only fix character-level errors, not whole words. So unless there's a clear OCR error in individual characters, I shouldn't change the entire word. Let's look at each character in \"డాక్రలు\".\n\nBreaking it down: డా (da), క్ (k), ర (ra), లు (lu). Wait, maybe the 'క్' is a conjunct or a matra issue. Alternatively, maybe the 'క' is correct. But \"డాక్రలు\" doesn't make sense. The correct word for doctors is \"డాక్టర్లు\". So perhaps the OCR misread 'క్ట' as 'క్ర'. But according to the rules, I can only fix character-level errors, not entire words. So unless there's a specific character that's wrong, like a digit or symbol replacing a Telugu character, I can't change the whole word. Let me check each character again.\n\nThe first character is డా (",
+    "tamil_translation": "டాక్టர்கள் தனను செகப் செய்யడానికి ராவடంతో"
+  },
+  {
+    "area_index": 6,
+    "area_bbox": [
+      46,
+      513,
+      695,
+      583
+    ],
+    "raw_ocr": "డిస్టర్బ చేయడం ఇష్టం లేక కలవలేదు",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"డిస్టర్బ చేయడం ఇష్టం లేక కలవలేదు\". First, I need to check for the specified errors.\n\nLooking at each word. \"డిస్టర్బ\" – the first part \"డిస్టర్బ\" seems like \"Disturb\" transliterated. But in Telugu script, \"డిస్టర్బ్\" is correct. Wait, but maybe the original was \"డిస్టర్బ్\" with a different matra? Let me check. The OCR might have misread a vowel sign. The word is \"డిస్టర్బ్\" – the 'ి' matra on the 'ట' might be correct. Hmm, maybe not an error here.\n\nNext word: \"చేయడం\" – looks correct. \"ఇష్టం\" – correct. \"లేక\" – correct. \"కలవలేదు\" – the 'ే' matra on 'క' might be correct. Wait, \"కలవలేదు\" – the 'లే' is correct. No obvious errors here.\n\nWait, the user mentioned digits replacing characters. Let me check for any numbers. The text has no digits. ASCII symbols? The original text doesn't have any symbols like @. Maybe the 'డిస్టర్బ్' is correct. Alternatively, maybe the 'ి' in 'డిస్టర్బ్' is a broken matra. But in OCR, sometimes the matra might be misread. Let me check the original word. If the intended word is \"డిస్టర్బ్\" (disturb), then the matra on 'ట' is correct. Alternatively, if it's \"డిస్టర్బ్\" with a different matra, but I don't see an error here.\n\nWait, maybe the 'ి' in 'డిస్టర్బ్' is actually a 'ీ'? But the OCR output shows 'ి', which is correct. So perhaps no error here. The rest of the words seem okay. The user's example mentioned '0' instead of 'ొ' or '6' instead of 'గ', but there's no such case here. Conjunct consonants split incorrectly? Let's see. \"డిస్టర్బ్\" is a single consonant with matra, no conjuncts. \"చేయడం\" is a compound verb,",
+    "tamil_translation": "டிஸ்டர்ப் செய்வது இஷ்டம் இல்லாது கலவலேదు"
+  },
+  {
+    "area_index": 7,
+    "area_bbox": [
+      44,
+      579,
+      678,
+      647
+    ],
+    "raw_ocr": "కా నేను తనతో మాట్లాడాలనుకున్న",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"కా నేను తనతో మాట్లాడాలనుకున్న\". First, I need to check for the specified errors.\n\nStarting with the first word \"కా\". The 'క' is correct, but the 'ా' here might be an issue. In Telugu, 'కా' is a valid word, but considering the context, maybe it's supposed to be 'కానీ' (but that's adding letters). Wait, the original OCR might have a broken vowel sign. The 'ా' here is a matra. If the OCR misread it as 'ా' instead of another matra, but 'కా' is correct. Alternatively, maybe the 'ా' is correct. Let me check the rest.\n\nNext word \"నేను\" – looks correct. Then \"తనతో\" – correct. \"మాట్లాడాలనుకున్న\" – seems okay. Wait, the original OCR text is \"కా నేను తనతో మాట్లాడాలనుకున్న\". The first word is \"కా\". If the intended word was \"కానీ\" (but that's adding 'నీ'), but the user said not to add/remove words. Alternatively, maybe the 'ా' is correct. Alternatively, maybe the OCR misread a conjunct. Wait, \"కా\" is a valid word, but in context, maybe it's supposed to be \"కానీ\" but that's adding letters. Since the user said not to add/remove words, I can't change that. Alternatively, maybe the 'ా' is a broken matra. Let me check the original OCR again. The user mentioned broken vowel signs. If the 'ా' is actually a different matra, like 'ా' vs 'ా' (but they are the same). Hmm. Alternatively, maybe the 'కా' is correct. Let me check the rest of the words.\n\nWait, the user's example mentions '0' instead of 'ొ' or '6' instead of 'గ'. In the given text, I don't see any digits or symbols replacing characters. The first word is 'కా', which is correct. The rest of the words seem okay. Maybe the 'కా' is correct. Alternatively, maybe the OCR misread a conjunct. For example, if it's supposed to be 'కానీ' but the OCR split",
+    "tamil_translation": "நான் தனతో பேசலனుకున్న"
+  },
+  {
+    "area_index": 8,
+    "area_bbox": [
+      46,
+      639,
+      599,
+      715
+    ],
+    "raw_ocr": "విషయాల ఓ ఉతరంలో",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text \"విషయాల ఓ ఉతరంలో\". First, I need to check for the specified errors.\n\nLooking at each character: \"విషయాల\" seems correct. Next is \"ఓ\" which is the vowel 'ō'. Then \"ఉతరంలో\" – the 'ఉ' here might be an issue. Wait, the original OCR text has \"ఓ\" followed by \"ఉతరంలో\". Wait, the user's instruction says to fix digits replacing Telugu characters. Let me check each character again.\n\nWait, the original OCR text is \"విషయాల ఓ ఉతరంలో\". Let me break it down:\n\nవిషయాల - correct.\nఓ - this is the vowel 'ō', which is correct.\nఉతరంలో - here, the 'ఉ' might be a mistake. The correct word should be \"ఉత్తరంలో\" (in the reply). The OCR might have misread the 'త్త' as 'త' and 'ర' as 'ర', but the 'ఉ' here is actually correct. Wait, no. Wait, \"ఉత్తరంలో\" is the correct spelling. The OCR has \"ఉతరంలో\" – missing the 'త్త' part. Wait, no. Let me check again. The OCR text is \"ఉతరంలో\". The correct word is \"ఉత్తరంలో\" (uttaramlo). So the OCR missed the 'త్త' part. But according to the user's instructions, we can only fix character-level errors like digits replacing characters, symbols, broken matras, or incorrect conjuncts. The user said not to change proper nouns or add/remove words. So if the OCR missed a character, like 'త్త' becoming 'త', that's a character-level error. But the user's examples include fixing a conjunct split incorrectly. So if the OCR split a conjunct into separate characters, we should fix that. But in this case, \"ఉత్తరంలో\" should be a single conjunct for 'త్త', but if the OCR wrote 'త' instead of 'త్త', that's a character error. However, the user's instruction says to fix only character-level errors, not missing characters. Wait, the user's examples include fixing a clearly broken vowel sign (matra) or a conjunct split incorrectly. So if the OCR split a conjunct into separate characters,",
+    "tamil_translation": "விஷயాల ஓ உత్తரத்தில்"
+  },
+  {
+    "area_index": 9,
+    "area_bbox": [
+      49,
+      716,
+      688,
+      784
+    ],
+    "raw_ocr": "జ గ్రత్తగా గిఫ్ట్ప్యాక్ చేసి తనకు అంద",
+    "corrected_telugu": "జ గ్రహంగా గిఫ్ట్ ప్యాక్ చేసి తనకు అంద",
+    "tamil_translation": "ஜி கிரஹంగా கிஃப்ட் பேக் செய்து தனக்கு அண்ட்"
+  },
+  {
+    "area_index": 10,
+    "area_bbox": [
+      51,
+      780,
+      648,
+      850
+    ],
+    "raw_ocr": "జేయమని కుటుంబసభ్యులకు ఇచా",
+    "corrected_telugu": "జేయమని కుటుంబసభ్యులకు ఇచ్చా",
+    "tamil_translation": "ஜெய்மனி குடும்பசభ్యுகளுக்கு இச்சா"
+  },
+  {
+    "area_index": 11,
+    "area_bbox": [
+      49,
+      853,
+      595,
+      915
+    ],
+    "raw_ocr": "లాంటి వ్కికి ఓ ఉతరం",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"లాంటి వ్కికి ఓ ఉతరం\". First, I need to check for the specified errors.\n\nStarting with the first word \"లాంటి\". The OCR seems correct here. The next word is \"వ్కికి\". Wait, \"వ్కికి\" doesn't look right. The correct Telugu character for 'క' is క, but here it's written as 'క్' which is the half form. The correct conjunct should be వకికి, so the 'క్' is incorrect. The OCR might have split the conjunct incorrectly. So \"వ్కికి\" should be \"వకికి\".\n\nThen \"ఓ\" – that's the OCR's output. The correct vowel here should be 'ఓ' (ō), but the OCR might have misread it as 'ఓ' or maybe another character. Wait, the original OCR text has \"ఓ\", which is correct. Wait, no, the user's instruction says to fix ASCII symbols replacing Telugu characters. But \"ఓ\" is a valid Telugu character. Wait, maybe the OCR had an issue here. Let me check again. The original OCR text is \"లాంటి వ్కికి ఓ ఉతరం\". The \"ఓ\" here is correct. Wait, but maybe the user meant that the OCR output has \"ఓ\" instead of another character. Hmm. Alternatively, maybe the \"ఓ\" is correct. Let me think. The word \"ఓ\" is a vowel, but in the context, maybe it's supposed to be \"ఒ\" (o) or another vowel. Wait, the original OCR text has \"ఓ\", which is a valid character. But according to the user's instructions, if there's a clearly broken vowel sign (matra), but here \"ఓ\" is a standalone vowel. Maybe the OCR is correct here. Let's check the next part.\n\n\"ఉతరం\" – that seems correct. So the main issue is \"వ్కికి\". The correct form should be \"వకికి\" because the conjunct is వకి, not వ్కి. The OCR split the క into క్ (half form) and కి, which is incorrect. So replacing \"వ్కికి\" with \"వకికి\".\n\nSo the corrected text should be: లాంటి వకికి ఓ ఉతరం.",
+    "tamil_translation": "இவ்வடா: நேனெப்படికీ மறச்சிப்போலேனு"
+  },
+  {
+    "area_index": 12,
+    "area_bbox": [
+      51,
+      911,
+      651,
+      988
+    ],
+    "raw_ocr": "ఇవ్వడా: నేనెప్పటికీ మరచిపోలేను",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"ఇవ్వడా: నేనెప్పటికీ మరచిపోలేను\". First, I need to check for the specified errors.\n\nLooking at \"ఇవ్వడా\", the colon after it might be an ASCII symbol replacing a Telugu character. In Telugu, the colon is sometimes used as a punctuation, but maybe it's supposed to be a different character. However, the colon is standard here, so maybe it's correct. Wait, the user mentioned ASCII symbols replacing Telugu characters. The colon is ASCII, but in Telugu script, sometimes a different punctuation might be used. But I'm not sure. Let me check the rest.\n\nNext, \"నేనెప్పటికీ\" – the 'ె' in 'నే' is a vowel sign. It looks correct. Then \"మరచిపోలేను\" – the 'చి' is a conjunct. The 'చి' is correct. Wait, the original OCR text has \"మరచిపోలేను\". Let me check each character. The 'చి' is a conjunct of చ + ి. That's correct. The 'పో' – the 'ో' is a vowel sign. Looks okay. The 'లేను' – the 'ే' is correct. \n\nWait, the user mentioned digits replacing characters. Let me check for any numbers. The OCR text doesn't have any digits. The user also mentioned broken vowel signs. The 'ె' in 'నే' is correct. The 'ీ' in 'మరచిపోలేను' – the 'ీ' is a vowel sign. Wait, in \"మరచిపోలేను\", the 'చి' is correct. The 'పో' has 'ో' which is correct. The 'లే' has 'ే' which is correct. \n\nWait, the original OCR text is \"ఇవ్వడా: నేనెప్పటికీ మరచిపోలేను\". The colon after \"ఇవ్వడా\" is ASCII. The user said to fix ASCII symbols replacing Telugu characters. But the colon is a punctuation mark, not a character replacement. So maybe it's okay. Unless the colon is supposed to be a different Telugu punctuation. But I don't think there's a Telugu equivalent for colon",
+    "tamil_translation": ""
+  }
+]

@@ -1,0 +1,98 @@
+[
+  {
+    "area_index": 0,
+    "area_bbox": [
+      102,
+      158,
+      1448,
+      384
+    ],
+    "raw_ocr": "గివ ప్రపంచ తెలుగు రచయితల న్రరుప్తాసబలు",
+    "corrected_telugu": "గివి ప్రపంచ తెలుగు రచయితల నవరూప్తాసబలు",
+    "tamil_translation": "கொடுக்கவும் உலக தெலுங்கு எழுத்தாளர்களின் புதிய உருவகங்கள்"
+  },
+  {
+    "area_index": 1,
+    "area_bbox": [
+      391,
+      349,
+      1186,
+      478
+    ],
+    "raw_ocr": "నెర్పెగత సదంంజలి",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text \"నెర్పెగత సదంంజలి\". First, I need to check for the common errors mentioned.\n\nLooking at \"నెర్పెగత\", the first word. The 'ె' after 'నె' seems correct. Then 'పె' – maybe that's supposed to be 'పె' or 'పే'? Wait, the original might have a different matra. Let me think. The OCR might have misread a vowel sign. The 'ె' in 'పె' could be a mistake. If the original was 'పే', then the matra should be 'ే' instead of 'ె'. But without more context, it's hard to tell. However, the user mentioned fixing broken vowel signs. The 'ె' here might be correct, but maybe it's supposed to be 'ే'? Alternatively, maybe the 'ె' is correct. Hmm.\n\nNext, \"సదంంజలి\". The 'ం' is a correct anusvara. But the 'ంజ' part – is that a conjunct? 'ంజ' is a valid conjunct for 'న్జ'. But maybe the OCR split it incorrectly. Wait, in Telugu, 'ంజ' is a single character, so if it's written as 'న్జ', that's a split. But here it's 'ంజ', which is correct. So maybe that's okay.\n\nWait, the original OCR text is \"నెర్పెగత సదంంజలి\". Let me check each character:\n\nనె (ne) – correct.\nర్పె (rpe) – maybe 'ర్పె' is correct, but perhaps the 'ె' should be 'ే'? If the original was 'ర్పే', then the matra is wrong. But without more context, it's hard. Alternatively, maybe the 'ె' is correct. The user said to fix clearly broken vowel signs. If the 'ె' is a mistake, but I'm not sure. Maybe leave it as is.\n\nThen 'గత' – correct. So the first word is \"నెర్పెగత\". Maybe the 'ె' in 'ర్పె' is correct. Alternatively, if the OCR misread a 'ే' as 'ె', but I can't be certain. Since the user said to only fix clear errors, and if it's ambiguous, leave it. So maybe",
+    "tamil_translation": "நேர்பெగత్ சதஞ்சலி"
+  },
+  {
+    "area_index": 2,
+    "area_bbox": [
+      298,
+      488,
+      1067,
+      592
+    ],
+    "raw_ocr": "SOll స్పరపాగతము తెలుగు భాషకు",
+    "corrected_telugu": "సోల్ స్పరపాగతము తెలుగు భాషకు",
+    "tamil_translation": "சோல் ஸ்வாகதము தெலுங்கு மொழிக்கு"
+  },
+  {
+    "area_index": 3,
+    "area_bbox": [
+      420,
+      590,
+      1394,
+      708
+    ],
+    "raw_ocr": "స్పాగతము ప్రతినిధులకు రసాస్పాదులకున్",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"స్పాగతము ప్రతినిధులకు రసాస్పాదులకున్\". First, I need to check for the specified errors.\n\nLooking at each word. \"స్పాగతము\" – the first part \"స్పా\" might be an issue. Wait, \"స్పాగతము\" is likely \"స్వాగతము\" (swagatamu), which means welcome. The OCR might have misread the 'వ' as 'ప' here. But the user's instructions say to fix only character-level errors, not whole words. Hmm, but maybe the 'ప' is a mistake. Wait, the original word is \"స్పాగతము\", but the correct spelling is \"స్వాగతము\". However, the user said not to change proper nouns or place names, but this is a common word. But according to the rules, if unsure, leave it as-is. Maybe the OCR error here is 'ప' instead of 'వ'? But the user's examples include digits replacing characters, like '0' for 'ొ' or '6' for 'గ'. So maybe this is a case of a character mistake. But I'm not sure. Let me check the next word.\n\n\"ప్రతినిధులకు\" – seems okay. \"రసాస్పాదులకున్\" – the last part \"కున్\" might be \"కున్\" or \"కున్\". Wait, the correct word is \"రసాస్పాదులకు\" (rasaspaadulaku), but here it's \"రసాస్పాదులకున్\". The 'కున్' at the end might be a mistake. The correct ending should be \"కు\" (ku) for the dative case. So \"కున్\" is probably an OCR error where the 'న్' is a broken vowel sign or a conjunct. The 'న్' here might be a misread of the vowel sign. Alternatively, maybe the 'కున్' is supposed to be 'కున్' but the correct ending is 'కు'. Wait, in Telugu, the dative case for \"రసాస్పాదులు\" would be \"రసాస్పాదులకు\". So \"కున్\" here is likely a mistake. The 'న్' at the end might be a broken vowel sign or",
+    "tamil_translation": "ஸ்வாகதం தீபி கட்ட பள்ளி சம்பரமுலகுனே"
+  },
+  {
+    "area_index": 4,
+    "area_bbox": [
+      433,
+      693,
+      1063,
+      789
+    ],
+    "raw_ocr": "స్ర్ాగతమభిమానులకును",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text \"స్ర్ాగతమభిమానులకును\". First, I need to check for the common OCR errors mentioned.\n\nLooking at the first character \"స్ర్ా\". The correct Telugu character for \"స్ర\" is స్ర, but here it's written as స్ర్ా. The \"ా\" here is a vowel sign, but in this context, it's incorrect. The correct vowel sign for \"స్ర\" should be a different one. Wait, \"స్ర\" is a consonant with a vowel sign. Let me think. The correct word should be \"స్రవంతమభిమానులకును\". So the first part \"స్ర్ా\" is wrong. The \"ా\" is the wrong vowel sign. The correct vowel sign for \"స్ర\" would be \"ె\" or \"ా\"? Wait, \"స్ర\" is a combination of స్ + ర్ + అ. Wait, maybe the OCR misread the vowel sign. The original might be \"స్రవంతం\", so the first part is \"స్రవంతమ\". Let me check the OCR text again: \"స్ర్ాగతమభిమానులకును\". The \"ా\" after స్ర is incorrect. The correct vowel sign here should be \"ె\" to make \"స్రె\", but that doesn't make sense. Wait, maybe the correct word is \"స్రవంతమ\" (sravantam). So the OCR might have misread the \"వ\" as \"ా\". Because \"వ\" and \"ా\" can look similar in some fonts. So \"స్ర్ా\" should be \"స్రవ\". So replacing the \"ా\" with \"వ\". Then the rest of the word: \"గతమభిమానులకును\". Let's check \"గతమభిమానులకును\". The \"భిమానుల\" part seems correct. But \"గతమ\" might be \"గమ\" or \"గత\". Wait, \"గతమ\" is correct. So the main error is in the first part. So the corrected text should be \"స్రవంతమభిమానులకును\". Let me confirm. The original OCR has \"స్ర్ాగతమభిమానులకును\". Changing \"స్ర్ా\" to \"స్రవ",
+    "tamil_translation": "ஸ்வாகதమభిమానులకు"
+  },
+  {
+    "area_index": 5,
+    "area_bbox": [
+      438,
+      796,
+      1342,
+      890
+    ],
+    "raw_ocr": "స్పాగత మిఠ గడ్డ బడ సంబరములకునె",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. The user provided the text: \"స్పాగత మిఠ గడ్డ బడ సంబరములకునె\". First, I need to check for the specified errors.\n\nStarting with the first word \"స్పాగత\". The 'స్పా' part looks correct. The 'గత' might be okay, but I'm not sure. Next, \"మిఠ\" – the 'ఠ' is a valid Telugu character, so that's fine. Then \"గడ్డ\" – 'డ్డ' is correct. \"బడ\" – 'బ' and 'డ' are correct. \"సంబరములకునె\" – here, 'సంబర' might be a typo. The correct word should be \"సంబరములు\" but the OCR has \"సంబరములకునె\". Wait, \"కునె\" at the end doesn't look right. Maybe it's supposed to be \"కునే\" or \"కునె\" is incorrect. Alternatively, \"సంబరములకునె\" might be a misspelling of \"సంబరములకునే\" or \"సంబరములకునే\". But according to the rules, I can only fix character-level errors, not whole words. Let me check each character.\n\nLooking at \"సంబరములకునె\": the 'కునె' part. The 'కు' is correct, 'నె' might be a broken vowel. The correct matra for 'నె' is 'ె' after 'న', so maybe it's supposed to be 'నె' as in 'కునె' is correct. Wait, but the original OCR has 'కునె' – maybe the 'ె' is missing or misplaced. Alternatively, maybe the 'కునె' is correct. Hmm. Alternatively, maybe the 'కునె' should be 'కునే' with a different matra. But without more context, it's hard to tell. Since the user said to only fix clearly broken vowel signs, and if 'కునె' is a valid word, maybe it's okay. Alternatively, maybe the 'కునె' is a typo for 'కునే' but I can't be sure. Since the instruction says if unsure, leave it as-is, I should leave it. So the corrected text would be",
+    "tamil_translation": "சிண்டிகேட் பேంక్ తరఫున"
+  },
+  {
+    "area_index": 6,
+    "area_bbox": [
+      85,
+      931,
+      1597,
+      1047
+    ],
+    "raw_ocr": "సిండికేట్ బ్యాంక్ తరఫున",
+    "corrected_telugu": "సిండికేట్ బ్యాంక్ తరఫున",
+    "tamil_translation": "ஸ்வాగதம் தீபி கட்ட பள்ளி சம்பரமுலகுனே"
+  },
+  {
+    "area_index": 7,
+    "area_bbox": [
+      80,
+      1047,
+      1564,
+      1167
+    ],
+    "raw_ocr": "SvndicateBank స్ర్వాగతం సుస్పాగతం 3UhH G0v: 01 India Undertaking",
+    "corrected_telugu": "<think>\nOkay, let's tackle this OCR correction. First, I need to check each part of the input text for possible errors.\n\nStarting with \"SvndicateBank\". The original word is probably \"SyndicateBank\". The 'v' here might be a mistake. In Telugu, 'v' isn't a common consonant, so maybe it's supposed to be 'y' or another character. But since the user mentioned only fixing character-level errors, and 'v' is an ASCII character, maybe it's a typo. However, the user's examples include replacing ASCII symbols with Telugu characters, but 'v' isn't listed. Wait, the user's examples mention replacing '@' with 'అ', but 'v' isn't an ASCII symbol. Maybe it's a different case. Alternatively, maybe 'Svndicate' is supposed to be 'Syndicate' with a 'y', but the OCR might have misread 'y' as 'v'. But since the user's instructions are strict about only fixing character mistakes, and 'v' is an ASCII character, perhaps it's acceptable to correct it to 'y' if that's the intended correction. However, the user's examples don't include this scenario. Hmm. Maybe I should leave it as is unless it's a clear ASCII symbol replacement. Since 'v' is a letter, not a symbol, maybe it's not covered. So perhaps leave 'Svndicate' as is.\n\nNext, \"స్ర్వాగతం\". The correct word is \"స్వాగతం\". The '్ర్వ' here is incorrect. The correct sequence should be 'వా' (va) as in 'స్వాగతం'. The '్ర్వ' is a combination that doesn't exist. So the '్ర్వ' should be corrected to 'వా'. So the correct spelling is స్వాగతం.\n\nThen \"సుస్పాగతం\". The correct word is \"సుస్పందం\" or \"సుస్పందాగతం\"? Wait, maybe \"సుస్పందాగతం\" is the intended word. The 'పాగతం' part is incorrect. The correct ending should be 'పందాగతం' (pandāgatam). So 'పాగతం' should be 'పందాగతం'. So the 'ప' in 'పాగతం' is wrong; it should be 'పందాగతం'. So the 'పాగతం",
+    "tamil_translation": "ஸ்வாகதம் సుస்பందాగதம்"
+  }
+]
