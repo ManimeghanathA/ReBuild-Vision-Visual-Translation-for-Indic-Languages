@@ -1,6 +1,6 @@
 
 #Sarvam API key
-Sarvam: "sk_xx7l2kcm_cCpJ5u4LM2PHMJ224HLXnocW"
+Sarvam: "SARVAM_API_KEY"
 
 # 1. Clone and enter CRAFT
 git clone https://github.com/clovaai/CRAFT-pytorch.git
