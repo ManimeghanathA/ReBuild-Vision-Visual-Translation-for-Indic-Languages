@@ -1,0 +1,15 @@
+# Git LFS — track large binary files
+# These are stored in LFS, not in the normal git object store.
+# Run `git lfs install` once before cloning/pushing.
+*.pth filter=lfs diff=lfs merge=lfs -text
+*.pkl filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.onnx filter=lfs diff=lfs merge=lfs -text
+*.h5 filter=lfs diff=lfs merge=lfs -text
+# Input images tracked in LFS (keeps repo history lean)
+data/images/*.jpg filter=lfs diff=lfs merge=lfs -text
+data/images/*.jpeg filter=lfs diff=lfs merge=lfs -text
+data/images/*.png filter=lfs diff=lfs merge=lfs -text
+data/images/*.JPG filter=lfs diff=lfs merge=lfs -text
+data/images/*.JPEG filter=lfs diff=lfs merge=lfs -text
+data/images/*.PNG filter=lfs diff=lfs merge=lfs -text
