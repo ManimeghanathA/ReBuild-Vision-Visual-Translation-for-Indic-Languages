@@ -462,7 +462,7 @@ scripts/vtt/
 ```bibtex
 @misc{vtt2025,
   title  = {ReBuild Vision: Visual Translation for Indic Languages},
-  author = {Manimeghanath A and Shriram},
+  author = {Manimeghanath A and Shriram and Koppesh},
   year   = {2025},
   url    = {https://github.com/ManimeghanathA/ReBuild-Vision-Visual-Translation-for-Indic-Languages}
 }
