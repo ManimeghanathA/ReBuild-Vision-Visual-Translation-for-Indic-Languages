@@ -55,9 +55,6 @@ config_local.py
 *.zip
 *.log
 dir.py
-instructions.txt
-
-files/
-others/
+instructions_to_run_model.txt
 
 
