@@ -1,4 +1,4 @@
-
+YOUR_KEY = "Groq_key"
 
 # 1. Clone and enter CRAFT
 git clone https://github.com/clovaai/CRAFT-pytorch.git
