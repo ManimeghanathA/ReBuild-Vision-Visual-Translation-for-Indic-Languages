@@ -1,6 +1,4 @@
 
-#Sarvam API key
-Sarvam: "SARVAM_API_KEY"
 
 # 1. Clone and enter CRAFT
 git clone https://github.com/clovaai/CRAFT-pytorch.git
@@ -41,3 +39,4 @@ python scripts/run_pipeline.py `
     --image  data/images/img7.jpeg `
     --result CRAFT-pytorch/result/res_img7.txt `
     --api-key YOUR_KEY
+

@@ -258,26 +258,27 @@ def process_one(img_path, res_path, args, ocr_reader):
             print('  Normalizing OCR text...')
             for area in processed_areas:
                 raw = area.get('full_text', '').strip()
+                # Gemini handles the "thinking" internally now, so we just call it
                 area['corrected_telugu'] = (
                     normalize_telugu_ocr(raw, args.api_key) if raw else ''
                 )
-                time.sleep(0.3)
+                # Small sleep to avoid hitting rate limits
+                time.sleep(0.5) 
 
             print('  Translating all areas in one call...')
-            corrected     = [a.get('corrected_telugu', '') for a in processed_areas]
+            corrected = [a.get('corrected_telugu', '') for a in processed_areas]
             tamil_results = translate_areas(corrected, image_type, args.api_key)
+            
+            # Map results back
             for i, area in enumerate(processed_areas):
                 area['tamil_translation'] = tamil_results[i]
 
-            def _strip(t):
-                return re.sub(r'<think>.*?</think>', '', t or '',
-                              flags=re.DOTALL).strip()
-
+            # Simplify the saving part (Gemini output is clean JSON)
             save_data = [{
                 'area_index':        i,
                 'area_bbox':         list(area['area_bbox']),
                 'raw_ocr':           area.get('full_text', ''),
-                'corrected_telugu':  _strip(area.get('corrected_telugu', '')),
+                'corrected_telugu':  area.get('corrected_telugu', ''),
                 'tamil_translation': area.get('tamil_translation', ''),
             } for i, area in enumerate(processed_areas)]
 

@@ -1,17 +1,21 @@
-"""
-vtt/translation.py
-──────────────────
-Sarvam AI integration:
-  - Auto image-type detection from OCR text
-  - Telugu OCR normalization (character-level error correction)
-  - Telugu → Tamil translation (3 word-type rules, single API call)
-"""
-
+from groq import Groq
 import re
 import json
 import time
-import requests
 
+# ── Setup ─────────────────────────────────────────────────────────────────────
+# Using Groq free tier instead of Gemini (Gemini free tier is region-blocked in India).
+# Get your free API key at: https://console.groq.com
+# Model: llama-3.3-70b-versatile — strong multilingual support for Indian languages.
+MODEL_NAME = 'llama-3.3-70b-versatile'
+
+# Cache the client instead of creating a new one on every call.
+_client_cache: dict = {}
+
+def _get_client(api_key: str) -> Groq:
+    if api_key not in _client_cache:
+        _client_cache[api_key] = Groq(api_key=api_key)
+    return _client_cache[api_key]
 
 IMAGE_TYPE_DESCRIPTIONS = {
     'signboard' : 'an outdoor signboard for a building, institution or business',
@@ -21,183 +25,141 @@ IMAGE_TYPE_DESCRIPTIONS = {
     'document'  : 'a formal document or notice',
 }
 
-_SARVAM_URL = 'https://api.sarvam.ai/v1/chat/completions'
-
-
-def _headers(api_key: str) -> dict:
-    return {
-        'api-subscription-key': api_key,
-        'Content-Type': 'application/json',
+def _get_groq_response(client: Groq, prompt: str, json_mode: bool = False) -> str:
+    kwargs = {
+        "model": MODEL_NAME,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.0,
+        "max_tokens": 2048,
     }
+    if json_mode:
+        kwargs["response_format"] = {"type": "json_object"}
 
-def _strip_think(text: str) -> str:
-    """Remove <think>...</think> blocks from sarvam-m output."""
-    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
+    for attempt in range(3):
+        try:
+            response = client.chat.completions.create(**kwargs)
+            text = response.choices[0].message.content
+            if text:
+                return text.strip()
+            return ""
+        except Exception as e:
+            if attempt == 2:
+                raise e
+            time.sleep(2 ** attempt)
+    return ""
 
+def _clean_json_string(raw_string: str) -> str:
+    return re.sub(r'```json\s?|\s?```', '', raw_string).strip()
 
 # ── Image type detection ──────────────────────────────────────────────────────
 
-def detect_image_type(processed_areas: list[dict],
-                      api_key: str) -> str:
-    """
-    Automatically detects image type from OCR text using sarvam-m.
-    Falls back to 'signboard' if detection fails.
-    """
+def detect_image_type(processed_areas: list[dict], api_key: str) -> str:
+    client = _get_client(api_key)
     all_text = ' '.join(a.get('full_text', '') for a in processed_areas).strip()
     if not all_text:
         return 'signboard'
 
     prompt = (
-        "You are given text extracted by OCR from an image. "
-        "Based on the text content, classify the image into exactly ONE of these types:\n"
-        "  newspaper  — article or magazine with paragraph text\n"
-        "  signboard  — building, institution or business sign\n"
-        "  road_sign  — direction or location sign\n"
-        "  poster     — advertisement or banner\n"
-        "  document   — formal notice or letter\n\n"
-        "Rules:\n"
-        "  - Reply with ONLY the single word label, nothing else\n"
-        "  - If unsure, reply: signboard\n\n"
-        f"OCR text: {all_text[:500]}"
+        "SYSTEM: You are a document classifier.\n"
+        "TASK: Classify the following OCR text into exactly ONE category.\n"
+        "CATEGORIES: [newspaper, signboard, road_sign, poster, document]\n"
+        "CONSTRAINT: Output ONLY the category name. No punctuation, no explanation.\n"
+        f"TEXT: {all_text[:500]}"
     )
-    payload = {
-        'model': 'sarvam-m',
-        'messages': [{'role': 'user', 'content': prompt}],
-        'max_tokens': 10,
-        'temperature': 0.0,
-    }
+
     try:
-        r = requests.post(_SARVAM_URL, headers=_headers(api_key),
-                          json=payload, timeout=20)
-        r.raise_for_status()
-        raw = _strip_think(r.json()['choices'][0]['message']['content']).lower()
+        raw = _get_groq_response(client, prompt).lower()
         if raw in IMAGE_TYPE_DESCRIPTIONS:
             return raw
     except Exception:
         pass
     return 'signboard'
 
-
 # ── Telugu OCR normalization ──────────────────────────────────────────────────
 
-def normalize_telugu_ocr(raw_text: str,
-                          api_key: str,
-                          retries: int = 3) -> str:
-    """
-    Fix character-level OCR errors in Telugu text using sarvam-m.
-    Strict prompt: ONLY fixes misrecognised characters, never rewrites.
-    """
+def normalize_telugu_ocr(raw_text: str, api_key: str, retries: int = 3) -> str:
     if not raw_text or not raw_text.strip():
         return raw_text
 
-    prompt = (
-        "You are a Telugu spell-checker for OCR output. "
-        "Your ONLY job is to fix character-level OCR recognition errors.\n\n"
-        "WHAT TO FIX (character mistakes only):\n"
-        "  - A digit replacing a Telugu character: '0' instead of 'ొ', '6' instead of 'గ'\n"
-        "  - An ASCII symbol replacing a Telugu character: '@' instead of 'అ'\n"
-        "  - A clearly broken vowel sign (matra)\n"
-        "  - A conjunct consonant split incorrectly\n\n"
-        "WHAT NOT TO DO:\n"
-        "  - Do NOT rewrite, rephrase or paraphrase\n"
-        "  - Do NOT change word order or add/remove words\n"
-        "  - Do NOT change proper nouns or place names\n"
-        "  - Do NOT change English words in Telugu script\n"
-        "  - Do NOT translate\n"
-        "  - If unsure about any word, leave it exactly as-is\n\n"
-        "OUTPUT: The corrected Telugu text only. No explanation.\n\n"
-        f"OCR text: {raw_text}"
-    )
-    payload = {
-        'model': 'sarvam-m',
-        'messages': [{'role': 'user', 'content': prompt}],
-        'max_tokens': 512,
-        'temperature': 0.0,
-    }
+    client = _get_client(api_key)
+
+    prompt = f"""
+SYSTEM: You are an expert Telugu Linguist specializing in OCR error correction.
+TASK: Correct the following distorted Telugu text extracted from street signs and movie posters.
+
+CORRECTION RULES:
+1. CHARACTER FIXES: Replace Replace the garbage like '@,0' in the text with similar looking telugu letter and it should also be appropriate with its neighbouring letters and should give meaning on whole and correct the telugu according to the context.
+2. WORD MERGING and correction: If words are split by random spaces (e.g., 'సి ని మా'), merge them ('సినిమా') and correct that telugu according to the context - make it meaningful telugu
+3. CONJUNCTS: Fix split or missing 'othulu' and 'gamakalu' (e.g., 'క్ ష' -> 'క్ష') and misread letter from OCR. Fix grammar: Reattach missing matras (vowel signs) based on context.
+4. NO AUTHORING: Do not rewrite the sentence. Do not add new meaning.
+5. NO THINKING: Do not explain your logic. Do not include <think> tags.
+6. Fix word breaks: Merge syllables that were split by spaces (e.g., 'సి ని మా' -> 'సినిమా').
+7. NO DIALOGUE: Do not explain your changes. No <think> tags.
+8. OUTPUT ONLY the corrected Telugu text.
+
+INPUT TEXT:
+{raw_text}
+
+CORRECTED TELUGU:"""
+
     for attempt in range(retries):
         try:
-            r = requests.post(_SARVAM_URL, headers=_headers(api_key),
-                              json=payload, timeout=30)
-            r.raise_for_status()
-            out = _strip_think(r.json()['choices'][0]['message']['content'])
-            return out
+            return _get_groq_response(client, prompt)
         except Exception as e:
-            print(f'  [normalize] attempt {attempt+1}: {e}')
+            print(f"Normalize Error: {e}")
             time.sleep(2 ** attempt)
     return raw_text
 
-
 # ── Telugu → Tamil translation ────────────────────────────────────────────────
 
-def translate_areas(corrected_texts: list[str],
-                    image_type: str,
-                    api_key: str,
-                    retries: int = 3) -> list[str]:
-    """
-    Translate all areas in ONE API call for full document context.
-
-    Three word-type rules enforced:
-      Rule 1 — Native Telugu words       → TRANSLATE to Tamil
-      Rule 2 — English loanwords         → RESTORE to English
-      Rule 3 — Proper nouns / places     → TRANSLITERATE to Tamil script
-    """
-    def clean(t: str) -> str:
-        return _strip_think(t) if t else ''
-
-    indexed = [(i, clean(t)) for i, t in enumerate(corrected_texts)
-               if t and clean(t).strip()]
+def translate_areas(corrected_texts: list[str], image_type: str, api_key: str, retries: int = 3) -> list[str]:
+    client = _get_client(api_key)
+    indexed = [(i, t.strip()) for i, t in enumerate(corrected_texts) if t and t.strip()]
     if not indexed:
         return [''] * len(corrected_texts)
 
     img_desc = IMAGE_TYPE_DESCRIPTIONS.get(image_type, image_type)
-    numbered = '\n'.join(f'Line {n+1}: {t}' for n, (_, t) in enumerate(indexed))
+    numbered_input = '\n'.join(f"L{n+1}: {t}" for n, (_, t) in enumerate(indexed))
 
-    prompt = (
-        f"You are an expert Telugu to Tamil translator.\n"
-        f"The text below was extracted from {img_desc}.\n\n"
-        f"THREE RULES — follow strictly for every word:\n"
-        f"  Rule 1 — Native Telugu words: TRANSLATE to Tamil\n"
-        f"    e.g. కొంతమందికి→சிலருக்கு  అవకాశం→வாய்ப்பு  పెద్ద→பெரிய\n"
-        f"  Rule 2 — English words in Telugu script: RESTORE to English\n"
-        f"    e.g. పోలీస్→Police  డాక్టర్→Doctor  చెకప్→Checkup  గిఫ్ట్→Gift\n"
-        f"  Rule 3 — Proper nouns / place names: TRANSLITERATE to Tamil script\n"
-        f"    e.g. రజనీకాంత్→ரஜினிகாந்த்  కృష్ణంపాలెం→கிருஷ்ணம்பாலெம்\n\n"
-        f"All lines are from the SAME image — use full context.\n\n"
-        f"TEXT:\n{numbered}\n\n"
-        f"Return ONLY valid JSON. No explanation. No markdown:\n"
-        f'{{ "translations": [ {{"line": 1, "tamil": "..."}}, ... ] }}'
-    )
-    payload = {
-        'model': 'sarvam-m',
-        'messages': [{'role': 'user', 'content': prompt}],
-        'max_tokens': 2048,
-        'temperature': 0.2,
-    }
+    prompt = f"""
+SYSTEM: You are a professional translator from Telugu to Tamil.
+The input text is from a {img_desc} and may contain residual OCR errors and noise.
+
+TRANSLATION RULES:
+- RULE 0: If a line is unreadable garbage or just random characters, try correcting it with respect to the context if not correctable return an empty string "". Look at the Telugu, if that telugu make sense translate else, correct it to appropriate and nearlest telugu word it can form and translate accoring to follwoing rules.
+- RULE 1: Translate native Telugu to natural Tamil.
+- RULE 2: Transliterate English loanwords (Checkup, Police, Doctor) into TAMIL SCRIPT.
+- RULE 3: Transliterate Proper Nouns (Rajinikanth, Hyderabad) into TAMIL SCRIPT.
+- RULE 4: Some sentences requires both translation and transliteration, act smartly and provide result as accurate as possible.
+- RULE 5: NO THINKING: Output ONLY JSON. Do not describe your process.
+
+OUTPUT FORMAT (JSON):
+{{
+  "translations": [
+    {{ "line_id": 1, "tamil": "..." }},
+    {{ "line_id": 2, "tamil": "..." }}
+  ]
+}}
+
+INPUT:
+{numbered_input}
+"""
 
     results = {}
     for attempt in range(retries):
         try:
-            r = requests.post(_SARVAM_URL, headers=_headers(api_key),
-                              json=payload, timeout=60)
-            r.raise_for_status()
-            content = _strip_think(r.json()['choices'][0]['message']['content'])
-            # Strip markdown fences if present
-            content = re.sub(r'^```json\s*', '', content)
-            content = re.sub(r'^```\s*',     '', content)
-            content = re.sub(r'\s*```$',     '', content).strip()
-            brace = content.find('{')
-            if brace > 0:
-                content = content[brace:]
-            parsed = json.loads(content)
-            for item in parsed['translations']:
-                n = item['line'] - 1
-                if 0 <= n < len(indexed):
-                    results[indexed[n][0]] = item['tamil']
+            raw_json = _get_groq_response(client, prompt, json_mode=True)
+            cleaned_json = _clean_json_string(raw_json)
+            parsed = json.loads(cleaned_json)
+
+            for item in parsed.get('translations', []):
+                line_idx = item['line_id'] - 1
+                if 0 <= line_idx < len(indexed):
+                    orig_idx = indexed[line_idx][0]
+                    results[orig_idx] = item.get('tamil', '')
             break
         except Exception as e:
-            print(f'  [translate] attempt {attempt+1}: {e}')
-            if attempt == 0:
-                print(f'  Response snippet: {locals().get("content","none")[:200]}')
+            print(f"Translation Error: {e}")
             time.sleep(2 ** attempt)
 
     return [results.get(i, '') for i in range(len(corrected_texts))]

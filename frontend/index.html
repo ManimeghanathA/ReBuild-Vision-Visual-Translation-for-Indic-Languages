@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Visual Text Translation (Telugu -> Tamil)</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <h1>Visual Text Translation</h1>
+        <p class="subtitle">Upload an image with Telugu text → get an inpainted result + Tamil translation.</p>
+      </header>
+
+      <section class="card">
+        <form id="uploadForm" class="form">
+          <div class="field">
+            <label for="imageInput">Image</label>
+            <input id="imageInput" name="image" type="file" accept="image/*" required />
+          </div>
+
+          <div class="field">
+            <label for="apiKeyInput">Sarvam AI API key</label>
+            <input id="apiKeyInput" name="api_key" type="password" placeholder="sk-..." autocomplete="off" />
+            <small class="hint">Required for translation. If empty, the app runs inpainting only.</small>
+          </div>
+
+          <label class="checkbox">
+            <input id="skipTranslateCheckbox" type="checkbox" checked />
+            <span>Skip translation (inpainting only)</span>
+          </label>
+
+          <div class="actions">
+            <button id="runButton" type="submit">Run Translation Pipeline</button>
+            <button id="clearButton" type="button" class="secondary">Clear</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card results">
+        <div class="statusRow">
+          <div id="statusText" class="statusText">Idle.</div>
+          <div id="progressBarWrap" class="progressWrap" hidden>
+            <div id="progressBar" class="progressBar"></div>
+          </div>
+        </div>
+
+        <div id="summary" class="summary" hidden>
+          <div><b>Image type:</b> <span id="imageType">unknown</span></div>
+          <div><b>Telugu areas found:</b> <span id="areaCount">0</span></div>
+          <div><b>Mode:</b> <span id="modeText">translation</span></div>
+        </div>
+
+        <div id="errorBox" class="errorBox" hidden></div>
+
+        <div class="grid" id="outputGrid" hidden>
+          <div class="col">
+            <h2>Inpainted image (Telugu removed)</h2>
+            <img id="inpaintedImg" class="preview" alt="Inpainted result" />
+            <div class="downloadRow">
+              <a id="downloadInpaintedLink" class="downloadLink" hidden>Download inpainted image</a>
+            </div>
+          </div>
+
+          <div class="col">
+            <h2>Translation results</h2>
+            <div class="tableMeta" id="translationMeta"></div>
+            <div id="translationList" class="translationList"></div>
+            <div class="downloadRow">
+              <a id="downloadTranslationsLink" class="downloadLink" hidden>Download translations (JSON)</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
+
