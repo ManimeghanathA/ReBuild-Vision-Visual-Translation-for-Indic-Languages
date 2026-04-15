@@ -1,0 +1,4 @@
+================ Training Loss (Wed Apr 15 01:20:53 2026) ================
+================ Training Loss (Wed Apr 15 01:22:21 2026) ================
+================ Training Loss (Wed Apr 15 01:29:42 2026) ================
+(epoch: 20, iters: 128, time: 0.043, data: 7.634) G_GAN: 0.134 G_L1: 6.054 D_content: 0.726 D_style: 0.611 
