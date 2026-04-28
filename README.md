@@ -1,8 +1,8 @@
-<img width="1434" height="625" alt="image" src="https://github.com/user-attachments/assets/9b40146c-9bef-4d87-a19c-1c58b119e710" /># ReBuild Vision — Visual Translation for Indic Languages
+# ReBuild Vision — Visual Translation for Indic Languages
 ### Telugu Scene Text → Tamil  |  Detection · OCR · Translation · Inpainting
 
 <p align="center">
-  <img src="docs/banner.png" alt="Before and After — Telugu signboard with text removed" width="820"/>
+  <img width="1434" height="625" alt="image" src="https://github.com/user-attachments/assets/9b40146c-9bef-4d87-a19c-1c58b119e710" />
 </p>
 
 <p align="center">
