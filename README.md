@@ -1,4 +1,4 @@
-# ReBuild Vision — Visual Translation for Indic Languages
+<img width="1434" height="625" alt="image" src="https://github.com/user-attachments/assets/9b40146c-9bef-4d87-a19c-1c58b119e710" /># ReBuild Vision — Visual Translation for Indic Languages
 ### Telugu Scene Text → Tamil  |  Detection · OCR · Translation · Inpainting
 
 <p align="center">
@@ -43,7 +43,7 @@ Imagine you're a Tamil speaker travelling through Andhra Pradesh. Every signboar
 > <!-- FILL IN AFTER DEPLOYMENT -->
 > `https://huggingface.co/spaces/YOUR_USERNAME/vtt-demo`
 
-Upload any Telugu image, paste your [Sarvam AI API key](https://sarvam.ai), and get:
+Upload any Telugu image, paste your [GROQ API KEY](https://console.groq.com/keys), and get:
 - The inpainted image (Telugu text removed) — downloadable as JPG
 - Translation results — downloadable as JSON
 
