@@ -113,11 +113,11 @@ def is_telugu_quad(quad: np.ndarray, area: dict) -> bool:
       • Any matched word is Devanagari / clean English  → SKIP (hard protect)
       • All matched words are ASCII noise               → ERASE (OCR misread)
 
-    NO MATCH CASES (EasyOCR missed this quad entirely):
+    NO MATCH CASES (OCR missed this quad entirely):
 
       Case A — Pure Telugu area (no protected words in sentence):
         → ERASE unconditionally.
-        Catches large/bold/decorative Telugu fonts that EasyOCR misses.
+        Catches large/bold/decorative Telugu fonts that OCR misses.
 
       Case B — Mixed area (has Devanagari or clean English words):
         Erase only if a Telugu word centre is within quad_height × 3.5 px.

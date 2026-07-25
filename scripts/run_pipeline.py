@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 scripts/run_pipeline.py
-────────────────────────
+------------------------
 Full end-to-end pipeline: detection -> OCR -> translation -> inpainting.
 
 Three modes
@@ -28,14 +28,16 @@ Three modes
 Optional flags
 --------------
   --output DIR        output directory (default: output)
-  --no-gpu            force CPU for EasyOCR
+  --no-gpu            force CPU for PaddleOCR
   --show              show before/after plot for each image
-  --skip-translate    skip Sarvam AI calls, inpainting only (good for testing)
+  --skip-translate    skip Groq API calls, inpainting only (good for testing)
 
 Outputs (in --output folder)
 -----------------------------
-  {stem}_inpainted.jpg
-  {stem}_translation_results.json   (skipped with --skip-translate)
+  {stem}/
+    inpainted.jpg
+    metadata.json
+    text_results.json
 """
 
 import argparse
@@ -46,8 +48,6 @@ import sys
 import time
 
 import cv2
-import easyocr
-
 from vtt import (
     load_craft_boxes,
     deduplicate_craft_boxes,
@@ -56,6 +56,7 @@ from vtt import (
     purify_areas,
     area_bbox,
     generate_area_mask,
+    create_ocr_reader,
     ocr_area,
     reconstruct_area_sentence,
     is_telugu_area,
@@ -70,13 +71,118 @@ from vtt import (
     visualize_inpainted,
 )
 
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, 'reconfigure'):
+        _stream.reconfigure(encoding='utf-8', errors='replace')
+
 IMAGE_EXTENSIONS = {
     '.jpg', '.jpeg', '.png', '.bmp', '.tiff',
     '.JPG', '.JPEG', '.PNG', '.BMP', '.TIFF',
 }
 
 
-# ── Argument parsing ──────────────────────────────────────────────────────────
+def json_safe(value):
+    """Convert numpy/OpenCV values into plain JSON-safe Python objects."""
+    try:
+        import numpy as np
+    except Exception:
+        np = None
+
+    if np is not None:
+        if isinstance(value, np.ndarray):
+            return value.tolist()
+        if isinstance(value, np.integer):
+            return int(value)
+        if isinstance(value, np.floating):
+            return float(value)
+        if isinstance(value, np.bool_):
+            return bool(value)
+    if isinstance(value, dict):
+        return {str(k): json_safe(v) for k, v in value.items() if k != 'mask'}
+    if isinstance(value, (list, tuple)):
+        return [json_safe(v) for v in value]
+    return value
+
+
+def area_to_metadata(area, area_index):
+    """Build the persistent per-area OCR/translation record."""
+    return {
+        'area_index': area_index,
+        'source_area_index': area.get('area_idx'),
+        'area_bbox': list(area.get('area_bbox', [])),
+        'area_quads': json_safe(area.get('area_quads', [])),
+        'raw_text': area.get('full_text', ''),
+        'corrected_telugu': area.get('corrected_telugu', ''),
+        'tamil_translation': area.get('tamil_translation', ''),
+        'telugu_words': json_safe(area.get('telugu_words', [])),
+        'other_words': json_safe(area.get('other_words', [])),
+        'raw_ocr': json_safe(area.get('raw_ocr', [])),
+    }
+
+
+def write_image_outputs(output_root, img_stem, img_path, res_path, img, inpainted,
+                        raw_boxes, boxes, areas_raw, areas_merged,
+                        valid_areas, noise_areas, processed_raw,
+                        processed_areas, image_type, skip_translate):
+    """Write each image's image output and metadata under output/<image_stem>/."""
+    image_dir = os.path.join(output_root, img_stem)
+    os.makedirs(image_dir, exist_ok=True)
+
+    inpainted_path = os.path.join(image_dir, 'inpainted.jpg')
+    cv2.imwrite(inpainted_path, cv2.cvtColor(inpainted, cv2.COLOR_RGB2BGR))
+
+    text_results = [
+        {
+            'area_index': i,
+            'area_bbox': list(area.get('area_bbox', [])),
+            'raw_text': area.get('full_text', ''),
+            'corrected_telugu': area.get('corrected_telugu', ''),
+            'tamil_translation': area.get('tamil_translation', ''),
+        }
+        for i, area in enumerate(processed_areas)
+    ]
+
+    metadata = {
+        'image_stem': img_stem,
+        'source_image': img_path,
+        'craft_result': res_path,
+        'image_width': int(img.shape[1]),
+        'image_height': int(img.shape[0]),
+        'skip_translate': bool(skip_translate),
+        'image_type': image_type,
+        'counts': {
+            'craft_boxes_raw': len(raw_boxes),
+            'craft_boxes_deduped': len(boxes),
+            'areas_raw': len(areas_raw),
+            'areas_merged': len(areas_merged),
+            'areas_valid': len(valid_areas),
+            'areas_noise': len(noise_areas),
+            'telugu_areas_before_ocr_dedup': len(processed_raw),
+            'telugu_areas_after_ocr_dedup': len(processed_areas),
+        },
+        'outputs': {
+            'inpainted_image': inpainted_path,
+            'metadata': os.path.join(image_dir, 'metadata.json'),
+            'text_results': os.path.join(image_dir, 'text_results.json'),
+        },
+        'areas': [
+            area_to_metadata(area, i)
+            for i, area in enumerate(processed_areas)
+        ],
+    }
+
+    metadata_path = os.path.join(image_dir, 'metadata.json')
+    with open(metadata_path, 'w', encoding='utf-8') as f:
+        json.dump(json_safe(metadata), f, ensure_ascii=False, indent=2)
+
+    text_results_path = os.path.join(image_dir, 'text_results.json')
+    with open(text_results_path, 'w', encoding='utf-8') as f:
+        json.dump(json_safe(text_results), f, ensure_ascii=False, indent=2)
+
+    return image_dir, inpainted_path, metadata_path, text_results_path
+
+
+# -- Argument parsing ----------------------------------------------------------
 
 def parse_args():
     p = argparse.ArgumentParser(
@@ -102,20 +208,20 @@ def parse_args():
                             'Omit to process ALL images in --image-dir.')
 
     p.add_argument('--api-key',        default='',
-                   help='Sarvam AI API key (required unless --skip-translate)')
+                   help='Groq API key (required unless --skip-translate)')
     p.add_argument('--output',         default='output',
                    help='Output directory (default: output)')
     p.add_argument('--no-gpu',         action='store_true',
-                   help='Force CPU for EasyOCR')
+                   help='Force CPU for PaddleOCR')
     p.add_argument('--show',           action='store_true',
                    help='Show before/after plot for each image')
     p.add_argument('--skip-translate', action='store_true',
-                   help='Skip Sarvam AI translation (inpainting only)')
+                   help='Skip Groq translation (inpainting only)')
 
     return p.parse_args()
 
 
-# ── Image pair collection ─────────────────────────────────────────────────────
+# -- Image pair collection -----------------------------------------------------
 
 def collect_pairs(args):
     """
@@ -180,12 +286,12 @@ def collect_pairs(args):
     return pairs
 
 
-# ── Per-image pipeline ────────────────────────────────────────────────────────
+# -- Per-image pipeline --------------------------------------------------------
 
 def process_one(img_path, res_path, args, ocr_reader):
     """Run the full pipeline on a single image. Returns True on success."""
     img_stem = os.path.splitext(os.path.basename(img_path))[0]
-    sep = '─' * 60
+    sep = '-' * 60
     print(f'\n{sep}')
     print(f'  Image : {img_path}')
     print(f'  Result: {res_path}')
@@ -194,13 +300,13 @@ def process_one(img_path, res_path, args, ocr_reader):
     # Load
     img_bgr = cv2.imread(img_path)
     if img_bgr is None:
-        print(f'  [ERROR] Cannot read image — skipping.')
+        print(f'  [ERROR] Cannot read image - skipping.')
         return False
     img = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
     print(f'  Size: {img.shape[1]}w x {img.shape[0]}h px')
 
-    # ── Phase 1: Detection ────────────────────────────────────────────────────
-    print('\n── Phase 1: Detection ──')
+    # -- Phase 1: Detection ----------------------------------------------------
+    print('\n-- Phase 1: Detection --')
     raw_boxes = load_craft_boxes(res_path)
     boxes     = deduplicate_craft_boxes(raw_boxes)
     print(f'  CRAFT boxes: {len(raw_boxes)} raw -> {len(boxes)} deduped')
@@ -211,8 +317,8 @@ def process_one(img_path, res_path, args, ocr_reader):
     print(f'  Areas: {len(areas_raw)} raw -> {len(areas_merged)} merged '
           f'-> {len(valid_areas)} valid, {len(noise_areas)} noise')
 
-    # ── Phase 1: OCR ──────────────────────────────────────────────────────────
-    print('\n── Phase 1: OCR ──')
+    # -- Phase 1: OCR ----------------------------------------------------------
+    print('\n-- Phase 1: OCR --')
     processed_raw = []
     for idx, area in enumerate(valid_areas):
         ocr_results = ocr_area(img, area, ocr_reader)
@@ -242,23 +348,47 @@ def process_one(img_path, res_path, args, ocr_reader):
           f'{len(processed_areas)} after cross-area dedup')
 
     if not processed_areas:
-        print('  No Telugu text detected — skipping translation & inpainting.')
+        print('  No Telugu text detected - saving unchanged image and metadata.')
+        image_dir, out_path, metadata_path, text_results_path = write_image_outputs(
+            output_root=args.output,
+            img_stem=img_stem,
+            img_path=img_path,
+            res_path=res_path,
+            img=img,
+            inpainted=img,
+            raw_boxes=raw_boxes,
+            boxes=boxes,
+            areas_raw=areas_raw,
+            areas_merged=areas_merged,
+            valid_areas=valid_areas,
+            noise_areas=noise_areas,
+            processed_raw=processed_raw,
+            processed_areas=processed_areas,
+            image_type='unknown',
+            skip_translate=args.skip_translate or not bool(args.api_key),
+        )
+        print(f'  Saved folder : {image_dir}')
+        print(f'  Saved image  : {out_path}')
+        print(f'  Saved metadata: {metadata_path}')
+        print(f'  Saved text   : {text_results_path}')
         return True
 
-    # ── Phase 2: Translation ──────────────────────────────────────────────────
+    image_type = 'unknown'
+
+    # -- Phase 2: Translation --------------------------------------------------
     if not args.skip_translate:
         if not args.api_key:
             print('  [WARN] --api-key not set; skipping translation. '
                   'Use --skip-translate to suppress this warning.')
         else:
-            print('\n── Phase 2: Translation ──')
+            print('\n-- Phase 2: Translation --')
             image_type = detect_image_type(processed_areas, args.api_key)
             print(f'  Image type (auto): {image_type}')
 
             print('  Normalizing OCR text...')
             for area in processed_areas:
                 raw = area.get('full_text', '').strip()
-                # Gemini handles the "thinking" internally now, so we just call it
+                # The LLM prompt handles OCR correction; keep the pipeline stage explicit.
                 area['corrected_telugu'] = (
                     normalize_telugu_ocr(raw, args.api_key) if raw else ''
                 )
@@ -272,31 +402,40 @@ def process_one(img_path, res_path, args, ocr_reader):
             # Map results back
             for i, area in enumerate(processed_areas):
                 area['tamil_translation'] = tamil_results[i]
+            ok = sum(1 for area in processed_areas if area.get('tamil_translation'))
+            print(f'  Translated: {ok}/{len(processed_areas)} areas')
+    else:
+        for area in processed_areas:
+            area['corrected_telugu'] = ''
+            area['tamil_translation'] = ''
 
-            # Simplify the saving part (Gemini output is clean JSON)
-            save_data = [{
-                'area_index':        i,
-                'area_bbox':         list(area['area_bbox']),
-                'raw_ocr':           area.get('full_text', ''),
-                'corrected_telugu':  area.get('corrected_telugu', ''),
-                'tamil_translation': area.get('tamil_translation', ''),
-            } for i, area in enumerate(processed_areas)]
-
-            json_path = os.path.join(args.output,
-                                     f'{img_stem}_translation_results.json')
-            with open(json_path, 'w', encoding='utf-8') as f:
-                json.dump(save_data, f, ensure_ascii=False, indent=2)
-            ok = sum(1 for d in save_data if d['tamil_translation'])
-            print(f'  Saved: {json_path}  ({ok}/{len(save_data)} areas translated)')
-
-    # ── Phase 2: Inpainting ───────────────────────────────────────────────────
-    print('\n── Phase 2: Inpainting ──')
+    # -- Phase 2: Inpainting ---------------------------------------------------
+    print('\n-- Phase 2: Inpainting --')
     inpainted = inpaint_all_areas(img, processed_areas)
     inpainted = inpaint_noise_boxes(inpainted, raw_boxes, processed_areas)
 
-    out_path = os.path.join(args.output, f'{img_stem}_inpainted.jpg')
-    cv2.imwrite(out_path, cv2.cvtColor(inpainted, cv2.COLOR_RGB2BGR))
-    print(f'  Saved: {out_path}')
+    image_dir, out_path, metadata_path, text_results_path = write_image_outputs(
+        output_root=args.output,
+        img_stem=img_stem,
+        img_path=img_path,
+        res_path=res_path,
+        img=img,
+        inpainted=inpainted,
+        raw_boxes=raw_boxes,
+        boxes=boxes,
+        areas_raw=areas_raw,
+        areas_merged=areas_merged,
+        valid_areas=valid_areas,
+        noise_areas=noise_areas,
+        processed_raw=processed_raw,
+        processed_areas=processed_areas,
+        image_type=image_type,
+        skip_translate=args.skip_translate or not bool(args.api_key),
+    )
+    print(f'  Saved folder : {image_dir}')
+    print(f'  Saved image  : {out_path}')
+    print(f'  Saved metadata: {metadata_path}')
+    print(f'  Saved text   : {text_results_path}')
 
     if args.show:
         visualize_inpainted(img, inpainted)
@@ -305,7 +444,7 @@ def process_one(img_path, res_path, args, ocr_reader):
     return True
 
 
-# ── Entry point ───────────────────────────────────────────────────────────────
+# -- Entry point ---------------------------------------------------------------
 
 def main():
     args = parse_args()
@@ -321,13 +460,13 @@ def main():
     print(f'\nImages to process: {total}')
     for img_path, _ in pairs:
         stem = os.path.splitext(os.path.basename(img_path))[0]
-        print(f'  • {stem}')
+        print(f'  - {stem}')
 
-    # Init EasyOCR once — shared across all images (expensive)
+    # Init PaddleOCR once - shared across all images (expensive)
     use_gpu = not args.no_gpu
-    print(f'\nInitialising EasyOCR (gpu={use_gpu})...')
-    ocr_reader = easyocr.Reader(['te', 'en'], gpu=use_gpu)
-    print('EasyOCR ready.')
+    print(f'\nInitialising PaddleOCR Telugu recognizer (gpu={use_gpu})...')
+    ocr_reader = create_ocr_reader(use_gpu=use_gpu)
+    print('PaddleOCR ready.')
 
     succeeded = failed = 0
     for img_path, res_path in pairs:
@@ -353,3 +492,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

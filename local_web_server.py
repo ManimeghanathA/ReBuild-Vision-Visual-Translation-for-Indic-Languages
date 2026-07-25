@@ -6,7 +6,7 @@ Tiny local HTTP server that:
   2) exposes POST /api/translate for image upload
 
 This server REUSES your existing modular pipeline:
-  - scripts/vtt/* (OCR + Sarvam translation + TELEA inpainting)
+  - scripts/vtt/* (OCR + Groq translation + TELEA inpainting)
   - CRAFT-pytorch test.py (text region detection)
 
 No changes are made to your existing main app code.
@@ -106,7 +106,7 @@ def setup_craft() -> None:
                 "# from torchvision.models.vgg import model_urls",
             )
 
-            # Also ensure line ~24 is commented (same logic as app.py)
+            # Also ensure line ~24 is commented (the old CRAFT patch)
             lines = vgg_src2.split("\n")
             if len(lines) > 24 and not lines[24].startswith("#"):
                 lines[24] = "# " + lines[24]
@@ -168,15 +168,15 @@ def run_craft(img_path: str) -> str:
 
 
 def load_ocr_reader():
-    """Load EasyOCR reader once and reuse."""
+    """Load PaddleOCR recognizer once and reuse."""
     global _ocr_reader
     with _ocr_reader_lock:
         if _ocr_reader is not None:
             return _ocr_reader
 
-        import easyocr  # type: ignore
+        from vtt import create_ocr_reader  # pylint: disable=import-outside-toplevel
 
-        _ocr_reader = easyocr.Reader(["te", "en"], gpu=_has_gpu())
+        _ocr_reader = create_ocr_reader(use_gpu=_has_gpu())
         return _ocr_reader
 
 
@@ -446,4 +446,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
 

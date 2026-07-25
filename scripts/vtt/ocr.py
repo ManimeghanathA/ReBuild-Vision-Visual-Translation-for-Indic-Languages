@@ -1,7 +1,7 @@
 """
 vtt/ocr.py
 ──────────
-Quad-rectified EasyOCR, line reconstruction, Telugu helpers,
+Quad-rectified PaddleOCR, line reconstruction, Telugu helpers,
 and cross-area OCR deduplication.
 
 Fixes implemented:
@@ -17,6 +17,10 @@ Fixes implemented:
 """
 
 import re
+import os
+from pathlib import Path
+from typing import Any
+
 import numpy as np
 import cv2
 
@@ -24,6 +28,117 @@ from .detection import bbox_iou, area_bbox
 
 # Telugu Unicode range
 TELUGU_RANGE = r'[\u0C00-\u0C7F]'
+
+DEFAULT_PADDLE_CACHE = Path(__file__).resolve().parents[2] / 'models' / 'paddleocr'
+DEFAULT_PADDLE_MODEL = 'te_PP-OCRv5_mobile_rec'
+
+
+class PaddleOCRRecognizer:
+    """Recognition-only PaddleOCR wrapper for already-rectified CRAFT crops."""
+
+    def __init__(self,
+                 model_name: str = DEFAULT_PADDLE_MODEL,
+                 cache_dir: str | os.PathLike | None = None,
+                 use_gpu: bool = True):
+        cache_path = Path(cache_dir) if cache_dir else DEFAULT_PADDLE_CACHE
+        cache_path.mkdir(parents=True, exist_ok=True)
+
+        os.environ.setdefault('PADDLE_PDX_CACHE_HOME', str(cache_path.resolve()))
+        os.environ.setdefault('PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK', 'True')
+        os.environ.setdefault('MODELSCOPE_CACHE', str((cache_path / 'modelscope').resolve()))
+        os.environ.setdefault('HF_HOME', str((cache_path / 'huggingface').resolve()))
+        os.environ.setdefault(
+            'HUGGINGFACE_HUB_CACHE',
+            str((cache_path / 'huggingface' / 'hub').resolve()),
+        )
+
+        from paddleocr import TextRecognition
+
+        self.device = 'cpu'
+        if use_gpu:
+            try:
+                import paddle  # type: ignore
+
+                if paddle.is_compiled_with_cuda():
+                    self.device = 'gpu'
+            except Exception:
+                self.device = 'gpu'
+
+        init_attempts = [
+            {'model_name': model_name, 'device': self.device},
+            {'model_name': model_name, 'device': 'cpu'},
+            {'model_name': model_name},
+        ]
+        last_error: Exception | None = None
+        for kwargs in init_attempts:
+            try:
+                self.model = TextRecognition(**kwargs)
+                self.device = kwargs.get('device', self.device)
+                break
+            except Exception as exc:
+                last_error = exc
+        else:
+            raise RuntimeError(f'Could not initialize PaddleOCR: {last_error}')
+
+    def readtext(self, crop_rgb: np.ndarray) -> list[tuple[str, float]]:
+        """Return PaddleOCR recognition as [(text, confidence)]."""
+        result = self.model.predict(crop_rgb)
+        text, confidence = parse_paddle_result(result)
+        if not text:
+            return []
+        return [(text, confidence if confidence is not None else 1.0)]
+
+
+def create_ocr_reader(use_gpu: bool = True,
+                      cache_dir: str | os.PathLike | None = None,
+                      model_name: str = DEFAULT_PADDLE_MODEL) -> PaddleOCRRecognizer:
+    """Create the OCR recognizer used by the main pipeline."""
+    return PaddleOCRRecognizer(
+        model_name=model_name,
+        cache_dir=cache_dir,
+        use_gpu=use_gpu,
+    )
+
+
+def parse_paddle_result(result: Any) -> tuple[str, float | None]:
+    """Extract text and average confidence from PaddleOCR 3.x results."""
+    texts: list[str] = []
+    confs: list[float] = []
+
+    def visit(node: Any) -> None:
+        if node is None:
+            return
+        if isinstance(node, dict):
+            for key in ('rec_text', 'text'):
+                value = node.get(key)
+                if value:
+                    texts.append(str(value).strip())
+            for key in ('rec_score', 'score', 'confidence'):
+                value = node.get(key)
+                if value is not None:
+                    try:
+                        confs.append(float(value))
+                    except (TypeError, ValueError):
+                        pass
+            for value in node.values():
+                visit(value)
+            return
+        if isinstance(node, (list, tuple)):
+            if len(node) == 2 and isinstance(node[1], (list, tuple)) and node[1]:
+                if isinstance(node[1][0], str):
+                    texts.append(node[1][0].strip())
+                    if len(node[1]) > 1:
+                        try:
+                            confs.append(float(node[1][1]))
+                        except (TypeError, ValueError):
+                            pass
+            for item in node:
+                visit(item)
+
+    visit(result)
+    text = ' '.join(t for t in texts if t).strip()
+    confidence = sum(confs) / len(confs) if confs else None
+    return text, confidence
 
 
 # ── CLAHE contrast enhancement ────────────────────────────────────────────────
@@ -109,15 +224,23 @@ def ocr_single_quad(img: np.ndarray,
     M_inv     = np.linalg.inv(M)
     quad_poly = ordered.astype(np.float32)
 
-    results = ocr_reader.readtext(enhanced, detail=1, paragraph=False)
+    results = ocr_reader.readtext(enhanced)
     words   = []
 
-    for bbox_rect, text, conf in results:
+    h_rect, w_rect = enhanced.shape[:2]
+    full_bbox_rect = [
+        [0.0, 0.0],
+        [float(max(w_rect - 1, 0)), 0.0],
+        [float(max(w_rect - 1, 0)), float(max(h_rect - 1, 0))],
+        [0.0, float(max(h_rect - 1, 0))],
+    ]
+
+    for text, conf in results:
         text = text.strip()
         if not text or float(conf) < conf_threshold:
             continue
 
-        bbox_abs = [list(unmap_point(p[0], p[1], M_inv)) for p in bbox_rect]
+        bbox_abs = [list(unmap_point(p[0], p[1], M_inv)) for p in full_bbox_rect]
         xs = [p[0] for p in bbox_abs]; ys = [p[1] for p in bbox_abs]
         x1a, x2a = min(xs), max(xs)
         y1a, y2a = min(ys), max(ys)
@@ -131,7 +254,7 @@ def ocr_single_quad(img: np.ndarray,
         words.append({
             'text':     text,
             'conf':     float(conf),
-            'bbox_rel': [[float(p[0]), float(p[1])] for p in bbox_rect],
+            'bbox_rel': [[float(p[0]), float(p[1])] for p in full_bbox_rect],
             'bbox_abs': bbox_abs,
             'cx': cx, 'cy': cy,
             'w':  x2a - x1a,

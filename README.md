@@ -1,481 +1,298 @@
-# ReBuild Vision — Visual Translation for Indic Languages
-### Telugu Scene Text → Tamil  |  Detection · OCR · Translation · Inpainting
+# ReBuild Vision
 
 <p align="center">
   <img width="1434" height="625" alt="image" src="https://github.com/user-attachments/assets/9b40146c-9bef-4d87-a19c-1c58b119e710" />
 </p>
 
-<p align="center">
-  <a href="#-what-is-this-project">About</a> ·
-  <a href="#-try-the-live-demo">Live Demo</a> ·
-  <a href="#%EF%B8%8F-installation--local-setup">Local Setup</a> ·
-  <a href="#%EF%B8%8F-system-architecture">Architecture</a> ·
-  <a href="#-deep-technical-details">Technical Deep-Dive</a> ·
-  <a href="#-current-status--future-direction">Roadmap</a>
-</p>
+**Visual scene-text localization and reconstruction for Telugu to Tamil media.**
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square"/>
-  <img src="https://img.shields.io/badge/EasyOCR-Telugu%20%2B%20English-green?style=flat-square"/>
-  <img src="https://img.shields.io/badge/Sarvam%20AI-sarvam--m-orange?style=flat-square"/>
-  <img src="https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square"/>
-</p>
+ReBuild Vision is a proof-of-concept system for translating text that is part of an image itself: signboards, posters, notices, road signs, captions, banners, and other text that appears inside the visual scene.
 
----
+Most localization systems translate speech or subtitles. They usually ignore text embedded in the video frame. Existing image-translation tools often place translated text over the original text, which can look cluttered and artificial. This project takes a harder route: detect the original text, read it, translate it, remove it from the scene, and prepare the image so translated Tamil text can later be rendered back in a visually consistent way.
 
-## 🌐 What is this project?
+The current implementation works at the **image level**. That is intentional. Images are the proof of concept before extending the same idea to videos, where we must also solve tracking, motion, flicker, and temporal consistency.
 
-Imagine you're a Tamil speaker travelling through Andhra Pradesh. Every signboard, warning notice, poster, and public announcement is written in Telugu — a script you cannot read.
+## Why This Project Exists
 
-**ReBuild Vision** takes a photograph of any scene containing Telugu text and automatically:
+India is highly multilingual. A Tamil speaker traveling through Telugu-speaking regions may see important public information in Telugu script: bus signs, institution boards, warning notices, posters, road directions, and local announcements. The text is not a subtitle; it is part of the physical world captured by the camera.
 
-1. **Finds** every Telugu word in the image — even on curved, tilted, or colourful signboards.
-2. **Reads** the Telugu text using AI-powered OCR.
-3. **Translates** it to Tamil, correctly handling place names, English loanwords, and native Telugu phrases with three different rules.
-4. **Erases** the original Telugu text from the photograph using stroke-level inpainting, leaving the background clean.
-5. Returns both the **Tamil translation** and the **cleaned image**, ready for translated Tamil text to be rendered on top.
+For film, educational content, tourism, navigation, and accessibility, this embedded visual text matters. If it remains untranslated, the viewer loses context. If we simply overlay a translation, the result often looks messy and breaks visual realism.
 
----
+ReBuild Vision explores a more complete visual localization pipeline:
 
-## 🚀 Try the Live Demo
+1. Find text in the scene.
+2. Recognize the source text.
+3. Translate it into the target language.
+4. Remove the original text cleanly.
+5. Render translated text back into the same visual region.
 
-> **Web app:**
-> <!-- FILL IN AFTER DEPLOYMENT -->
-> `https://huggingface.co/spaces/YOUR_USERNAME/vtt-demo`
+The fifth step, Tamil rendering, is the next major phase. The current code has built and tested the first four pieces.
 
-Upload any Telugu image, paste your [GROQ API KEY](https://console.groq.com/keys), and get:
-- The inpainted image (Telugu text removed) — downloadable as JPG
-- Translation results — downloadable as JSON
+## Why Images First, Then Videos
 
----
+The full long-term goal is video-level visual text dubbing. But video adds several hard problems on top of the image problem:
 
-## 💡 Problem Statement & Motivation
+- The same text must be tracked across frames.
+- Inpainting must not flicker.
+- Rendered Tamil text must stay stable as the camera moves.
+- Motion blur, perspective, and lighting can change frame by frame.
+- A bad decision in one frame can create visible temporal drift.
 
-India is a land of 22 officially recognised languages spread across geographically contiguous states. A person crossing from Tamil Nadu into Andhra Pradesh encounters an immediate and practical barrier: **every piece of public text is in a script they cannot read**, even though the two languages share centuries of cultural and lexical overlap.
+So the project starts with still images because they let us validate the core idea:
 
-Existing machine translation services work on typed text — they do nothing for a person standing in front of a physical signboard. Existing image translation apps (Google Lens, etc.) overlay translated text but do not **remove** the original text first, leading to cluttered overlays.
+- Can we detect Telugu scene text?
+- Can we OCR Telugu from natural images?
+- Can we translate the recognized text?
+- Can we remove the original text without destroying the background?
+- Can we preserve enough geometry for future rendering?
 
-This project demonstrates a **clean, modular pipeline** for scene-text visual translation that:
-- Is language-pair-agnostic (adaptable to any Indic language pair).
-- Reconstructs the background rather than painting over it.
-- Is fully open-source and reproducible without proprietary datasets.
-- Produces output immediately useful for downstream Tamil text rendering (Phase 3, in progress).
+Once the image-level system is reliable, the video system can reuse the same stages frame-by-frame and add tracking plus temporal smoothing.
 
----
+## Current Scope
 
-## ✅ Key Capabilities
+Current language pair:
 
-| Capability | Detail |
-|---|---|
-| **Script detection** | Detects Telugu Unicode range U+0C00–U+0C7F at word level |
-| **Mixed-script safety** | Preserves Devanagari (Hindi) and clean English words — never erases them |
-| **Three-rule translation** | Native Telugu → translate · English loanwords → restore to English · Proper nouns → transliterate to Tamil script |
-| **OCR error correction** | sarvam-m fixes character-level recognition errors before translation |
-| **Context-aware translation** | All text areas sent in one API call so the LLM sees full document context |
-| **Tight stroke masking** | Per-quad Otsu thresholding isolates only ink pixels; background texture preserved |
-| **Batch + selective processing** | All images in a folder, or specific images by name via `--select` |
-| **Image-type detection** | Auto-classifies image as signboard / poster / road sign / newspaper / document |
+- Source: Telugu
+- Target: Tamil
 
----
+Current input:
 
-## ⚙️ System Architecture
+- Still images containing Telugu scene text.
 
-```
-Your image (Telugu signboard / poster / document)
-           │
-           ▼
-┌──────────────────────┐
-│  CRAFT Detection     │  ← Finds every text region as a quadrilateral polygon
-└──────────┬───────────┘   (cloned + run separately — see Step 4 below)
-           │
-           ▼
-┌──────────────────────┐
-│  EasyOCR             │  ← Reads Telugu characters (2× upscale + CLAHE)
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────────────┐
-│  Sarvam AI  (sarvam-m)       │  ← Normalises OCR errors → Translates Te→Ta
-└──────────┬───────────────────┘
-           │
-           ▼
-┌──────────────────────┐
-│  Stroke Mask         │  ← Pixel-precise mask of just the ink strokes
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐     ┌─────────────────────────────┐
-│  TELEA Inpainting    │     │  Phase 3 — Tamil rendering  │
-│  (text erased)       │────▶│  <!-- IN PROGRESS — TBD --> │
-└──────────────────────┘     └─────────────────────────────┘
+Current output:
+
+- Per-image output folder under `output/<image_name>/`.
+- Inpainted image with Telugu text removed.
+- Metadata JSON containing detection counts, CRAFT geometry, OCR word data, raw OCR, corrected Telugu, and Tamil translation.
+- Clean text-results JSON containing raw text, corrected Telugu, and Tamil translation per area.
+
+Current status:
+
+- Text detection is working reasonably well with CRAFT.
+- Inpainting is often acceptable because the stroke masks are tight.
+- OCR has been switched from EasyOCR to PaddleOCR after an initial benchmark showed better recognition on the same CRAFT crops.
+- Translation quality still depends heavily on OCR quality, so OCR evaluation remains important before prompt/model tuning.
+- Tamil text rendering has not yet been rebuilt.
+
+Current metrics:
+
+- On hold. The code needs a repeatable evaluation set before reporting meaningful CER/WER, translation, and image-quality numbers.
+
+## Application Pipeline
+
+At a high level:
+
+```text
+Input image
+  -> CRAFT text detection
+  -> CRAFT box cleanup and grouping
+  -> OCR preprocessing and PaddleOCR recognition
+  -> Telugu-area filtering and OCR deduplication
+  -> optional OCR normalization and Telugu-to-Tamil translation
+  -> Telugu stroke-mask generation
+  -> OpenCV TELEA inpainting
+  -> cleaned image + translation JSON
 ```
 
-### Repository layout
+What each stage produces:
 
-```
-ReBuild-Vision-Visual-Translation-for-Indic-Languages/
-│
-├── scripts/
-│   ├── run_pipeline.py        ← CLI entry point (batch + selective)
-│   └── vtt/                   ← our Python package
-│       ├── __init__.py
-│       ├── detection.py
-│       ├── ocr.py
-│       ├── translation.py
-│       ├── inpainting.py      ← v2 with is_protected_non_telugu()
-│       └── visualisation.py
-│
-├── data/images/               ← your input images (Git LFS)
-├── output/                    ← generated outputs (gitignored)
-├── docs/                      ← README assets
-├── app.py                     ← Streamlit web demo
-├── Visual_Translation.ipynb  ← interactive notebook
-├── requirements.txt
-├── .gitignore
-└── .gitattributes             ← Git LFS rules
+| Stage | Input | Output |
+|---|---|---|
+| Detection | Image | Quadrilateral boxes around text |
+| Grouping | CRAFT boxes | Larger text areas/lines |
+| OCR | Image + text areas | Ordered Telugu/English OCR words |
+| Normalization | Raw Telugu OCR | Corrected Telugu text |
+| Translation | Corrected Telugu | Tamil translation |
+| Masking | Image + OCR + CRAFT quads | Binary mask of Telugu ink strokes |
+| Inpainting | Image + stroke mask | Image with Telugu text removed |
 
-CRAFT-pytorch/                 ← NOT in this repo — cloned separately (Step 4)
-    craft_mlt_25k.pth          ← downloaded separately (~170 MB)
-    result/                    ← CRAFT output .txt files (generated, gitignored)
+Each processed image is saved as:
+
+```text
+output/<image_name>/
+|-- inpainted.jpg
+|-- metadata.json
+`-- text_results.json
 ```
 
----
+The detailed implementation guide is in [TECHNICAL_README.md](TECHNICAL_README.md).
 
-## 🛠️ Installation & Local Setup
+## Active Repository Layout
 
-> **Time:** ~10 min first time (EasyOCR model download)
-> **Needs:** Python 3.10+, Git — GPU recommended but not required
-
-### Step 1 — Clone this repository
-
-```bash
-git clone https://github.com/ManimeghanathA/ReBuild-Vision-Visual-Translation-for-Indic-Languages.git
-cd ReBuild-Vision-Visual-Translation-for-Indic-Languages
+```text
+.
+|-- README.md                    # project overview and motivation
+|-- TECHNICAL_README.md           # detailed architecture and code walkthrough
+|-- Visual_Translation.ipynb      # original notebook prototype, ignored by git
+|-- scripts/
+|   |-- run_pipeline.py           # CLI entry point
+|   `-- vtt/
+|       |-- detection.py          # CRAFT parsing, box cleanup, area grouping
+|       |-- ocr.py                # OCR preprocessing, PaddleOCR, line reconstruction
+|       |-- translation.py        # Groq-based normalization and translation
+|       |-- inpainting.py         # Telugu filtering, stroke masks, TELEA inpainting
+|       |-- visualisation.py      # debugging visualizations
+|       `-- __init__.py           # package exports
+|-- local_web_server.py           # local browser UI backend
+|-- frontend/
+|   |-- index.html
+|   |-- styles.css
+|   `-- app.js
+|-- data/images/                  # sample input images
+|-- output/                       # generated outputs
+|-- docs/                         # project proposal and research notes
+`-- CRAFT-pytorch/                # external detector checkout, ignored by git
+`-- models/paddleocr/             # local PaddleOCR model cache, ignored by git
 ```
 
-### Step 2 — Create a virtual environment
+Historical notebooks, training experiments, checkpoints, and deployment notes live in `Others/` and `Helper_files/`. They are useful project memory, but the active maintainable code path is `scripts/`, `frontend/`, `local_web_server.py`, and the two root README files.
 
-**Windows (PowerShell):**
+## Setup
+
+```text
+Check out  [instruction_to_run.md](TECHNICAL_README.md) for direct commands for testing and for running the main pipeline
+```
+
+Create a Python environment:
+
 ```powershell
 python -m venv vision
-vision\Scripts\activate
-```
-
-**Linux / macOS:**
-```bash
-python -m venv vision
-source vision/bin/activate
-```
-
-### Step 3 — Install dependencies
-
-```bash
+vision\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-EasyOCR will download Telugu + English models (~300 MB) the first time it runs.
+Clone CRAFT and download its weights:
 
-### Step 4 — Clone CRAFT and download weights
-
-CRAFT is **not inside this repository** — you clone it separately, at the same level as this project folder:
-
-```bash
-# From inside the project root:
+```powershell
 git clone https://github.com/clovaai/CRAFT-pytorch.git
-
-# Download the model weights into the CRAFT folder (~170 MB):
 cd CRAFT-pytorch
-pip install gdown
 gdown https://drive.google.com/uc?id=1Jk4eGD7crsqCCg9C9VjCLkMN3ze8kutZ
 cd ..
 ```
 
-After this your folder layout should look like:
-```
-Visual Text Translation/       ← this repo
-CRAFT-pytorch/                 ← just cloned
-    craft_mlt_25k.pth          ← just downloaded
-```
+Patch CRAFT for modern torchvision:
 
-### Step 5 — Patch CRAFT for modern torchvision
-
-Run these once. They fix a compatibility break in newer versions of torchvision.
-
-**Windows (PowerShell):**
 ```powershell
-(Get-Content CRAFT-pytorch/basenet/vgg16_bn.py) `
-    -replace '^from torchvision.models.vgg import model_urls', '# from torchvision.models.vgg import model_urls' `
-    | Set-Content CRAFT-pytorch/basenet/vgg16_bn.py
+(Get-Content CRAFT-pytorch\basenet\vgg16_bn.py) `
+  -replace '^from torchvision.models.vgg import model_urls', '# from torchvision.models.vgg import model_urls' `
+  | Set-Content CRAFT-pytorch\basenet\vgg16_bn.py
 
-$file = Get-Content CRAFT-pytorch/basenet/vgg16_bn.py
-$file[24] = "#" + $file[24]
-$file | Set-Content CRAFT-pytorch/basenet/vgg16_bn.py
+$file = Get-Content CRAFT-pytorch\basenet\vgg16_bn.py
+$file[24] = '#' + $file[24]
+$file | Set-Content CRAFT-pytorch\basenet\vgg16_bn.py
 
-(Get-Content CRAFT-pytorch/craft.py) `
-    -replace 'vgg16_bn\(pretrained=True, freeze=True\)', 'vgg16_bn(pretrained=False, freeze=True)' `
-    | Set-Content CRAFT-pytorch/craft.py
+(Get-Content CRAFT-pytorch\craft.py) `
+  -replace 'vgg16_bn\(pretrained=True, freeze=True\)', 'vgg16_bn(pretrained=False, freeze=True)' `
+  | Set-Content CRAFT-pytorch\craft.py
 ```
 
-**Linux / macOS:**
-```bash
-sed -i 's/^from torchvision.models.vgg import model_urls/#&/' CRAFT-pytorch/basenet/vgg16_bn.py
-sed -i '25s/^/#/' CRAFT-pytorch/basenet/vgg16_bn.py
-sed -i 's/vgg16_bn(pretrained=True, freeze=True)/vgg16_bn(pretrained=False, freeze=True)/g' CRAFT-pytorch/craft.py
+PaddleOCR model cache:
+
+The main pipeline uses PaddleOCR's Telugu recognition model:
+
+```text
+te_PP-OCRv5_mobile_rec
 ```
 
-### Step 6 — Add your images
+By default, the code stores/downloads PaddleOCR model files under:
 
-Place your Telugu images (`.jpg`, `.jpeg`, `.png`) inside `data/images/`.
+```text
+models/paddleocr/
+```
 
-### Step 7 — Run CRAFT detection
+This folder is ignored by git. If `models/paddleocr/` is missing, the code creates it automatically. If the Telugu model is missing and network is available, PaddleOCR downloads the model on first run.
 
-```bash
+You can handle it like CRAFT weights: keep a copy in Drive if you want offline setup, then restore it into `models/paddleocr/` before running.
+
+GPU behavior:
+
+- By default, the CLI, benchmark, and UI try to use GPU when the installed OCR/runtime stack can use it.
+- If GPU is not available, they fall back to CPU.
+- Use `--no-gpu` only when you deliberately want CPU.
+- PaddleOCR can use GPU only when the installed Paddle package is GPU-enabled. A CPU Paddle install will still run correctly, but on CPU.
+
+## CLI Usage
+
+For full copy-paste command sets covering OCR comparison, one-image runs, selected-image runs, all-image runs, GPU/CPU behavior, and the local UI, see [instruction_to_run.md](instruction_to_run.md).
+
+First run CRAFT detection:
+
+```powershell
 cd CRAFT-pytorch
-python test.py \
-    --trained_model=craft_mlt_25k.pth \
-    --test_folder=../data/images \
-    --cuda=True
-# use --cuda=False if you don't have a GPU
+python test.py --trained_model=craft_mlt_25k.pth --test_folder=../data/images --cuda=True
 cd ..
 ```
 
-Results are written to `CRAFT-pytorch/result/res_<imagename>.txt`.
+Run the pipeline without translation, useful for smoke testing:
 
-### Step 8 — Run the pipeline
-
-**All images:**
-```powershell
-# Windows
-python scripts/run_pipeline.py `
-    --image-dir  data/images `
-    --result-dir CRAFT-pytorch/result `
-    --api-key    YOUR_SARVAM_API_KEY
-```
-```bash
-# Linux / macOS
-python scripts/run_pipeline.py \
-    --image-dir  data/images \
-    --result-dir CRAFT-pytorch/result \
-    --api-key    YOUR_SARVAM_API_KEY
-```
-
-**Specific images only** (comma-separated stems, no file extension):
 ```powershell
 python scripts/run_pipeline.py `
-    --image-dir  data/images `
-    --result-dir CRAFT-pytorch/result `
-    --api-key    YOUR_SARVAM_API_KEY `
-    --select     img1,img3,img7
+  --image-dir data/images `
+  --result-dir CRAFT-pytorch/result `
+  --select img1 `
+  --skip-translate
 ```
 
-**Single image (legacy):**
+Run translation and inpainting:
+
 ```powershell
 python scripts/run_pipeline.py `
-    --image  data/images/img7.jpeg `
-    --result CRAFT-pytorch/result/res_img7.txt `
-    --api-key YOUR_SARVAM_API_KEY `
-    --show
+  --image-dir data/images `
+  --result-dir CRAFT-pytorch/result `
+  --select img1,img3,img7 `
+  --api-key YOUR_GROQ_API_KEY
 ```
 
-**All flags:**
+## Local Browser UI
 
-| Flag | Description | Default |
-|---|---|---|
-| `--image-dir` | Folder of input images | — |
-| `--result-dir` | Folder of CRAFT `.txt` result files | — |
-| `--select` | Comma-separated stems to process | all images |
-| `--image` | Single image path (legacy mode) | — |
-| `--result` | Single CRAFT result path (legacy mode) | — |
-| `--api-key` | Sarvam AI API key | required |
-| `--output` | Output directory | `output/` |
-| `--no-gpu` | Force CPU for EasyOCR | GPU if available |
-| `--show` | Show before/after plot | off |
+Detailed UI startup instructions are in [instruction_to_run.md](instruction_to_run.md).
 
-### Step 9 — View outputs
+Start the server:
 
-```
-output/
-├── img1_inpainted.jpg              ← Telugu text erased
-├── img1_translation_results.json  ← OCR + corrected Telugu + Tamil
-└── ...
+```powershell
+python local_web_server.py
 ```
 
-Sample JSON output:
-```json
-[
-  {
-    "area_index": 0,
-    "area_bbox": [45, 120, 680, 195],
-    "raw_ocr": "2వ ప్రపంచ తెలుగు రచయితల మహాసభలు",
-    "corrected_telugu": "2వ ప్రపంచ తెలుగు రచయితల మహాసభలు",
-    "tamil_translation": "2வது உலக தெலுங்கு எழுத்தாளர்கள் மகாசபை"
-  }
-]
+Open:
+
+```text
+http://127.0.0.1:8000
 ```
 
-### Step 10 — Run the web demo locally (optional)
+The UI accepts an image upload, optionally accepts a Groq API key, runs the same modular pipeline, and returns an inpainted image plus translation JSON. If the key is blank, it runs inpainting-only mode.
 
-```bash
-streamlit run app.py
+## OCR Status
+
+CRAFT usually detects text well, and inpainting can remove detected text well. The earlier EasyOCR recognizer often misread Telugu scene text, so the main pipeline now uses PaddleOCR recognition on the same curated CRAFT crops.
+
+This does not mean OCR is solved. It means PaddleOCR is now the better baseline. The next engineering focus should be measuring OCR with labeled crops before tuning translation prompts.
+
+The benchmark script compares EasyOCR and PaddleOCR on the same CRAFT crops:
+
+```powershell
+vision\Scripts\python.exe scripts\benchmark_ocr.py `
+  --image-dir data/images `
+  --result-dir CRAFT-pytorch/result `
+  --select img1,img3,img7 `
+  --engines easyocr,paddleocr `
+  --paddle-cache models/paddleocr `
+  --output output/ocr_compare_selected
 ```
 
-Open `http://localhost:8501`. Upload an image, enter your Sarvam API key, click Run.
+Main comparison output:
 
----
-
-## 📖 Deep Technical Details
-
-### Detection — CRAFT
-
-CRAFT (Character Region Awareness for Text Detection) produces region score maps and affinity score maps. We use `craft_mlt_25k.pth` — pre-trained on 25,000 multilingual images.
-
-**What CRAFT outputs:** A `.txt` file per image with one quadrilateral (four `x,y` corner points) per detected text region.
-
-**Box deduplication (B2):** CRAFT can produce nested duplicates at multiple scales. We suppress any box that is >70% contained inside a larger box (largest-first pass).
-
-**Area grouping (B1):** Quads are grouped into text-line areas using running-median center-y with a stride cap of 1.2× median box height. Prevents lines from drifting together on multi-line blocks.
-
-**Area merging (B3, B7):** Adjacent areas are merged when they have >40% vertical overlap AND >15% horizontal overlap. The horizontal threshold prevents merging columns.
-
-**Area purification:** Areas smaller than 0.04% of image area, or single-box areas smaller than 0.2%, are noise and excluded from OCR.
-
-### OCR — EasyOCR
-
-Runs in `['te', 'en']` mode. Each CRAFT quad is processed individually for tilt correction and per-quad confidence filtering.
-
-**Quad rectification (B9):** Corners ordered TL→TR→BR→BL, perspective transform M computed, patch warped to a flat rectangle at 2× upscale. Words inverse-mapped back with M⁻¹.
-
-**Ghost word prevention (B13):** Pixels outside the area bbox are zeroed before rectification, preventing adjacent signs from bleeding in.
-
-**CLAHE enhancement (B12):** Applied to the L channel of LAB color space to improve recognition on faded or uneven text.
-
-**Line reconstruction (B11):** Words clustered into lines using height-adaptive vertical tolerance. Height ratio < 0.40 relative to line median → new line (separates headlines from subtitles).
-
-**Cross-area deduplication (B4):** Words from different areas overlapping by >50% are deduplicated, keeping the higher-confidence copy.
-
-### Translation — Sarvam AI
-
-Uses `sarvam-m` via the Sarvam AI API.
-
-**Image type detection:** OCR text → sarvam-m classifies as `signboard`, `newspaper`, `road_sign`, `poster`, or `document` → used in translation prompt for context.
-
-**OCR normalisation:** Dedicated call fixes character-level errors. Prompt explicitly forbids paraphrasing.
-
-**Three-rule translation (single call, full document context):**
-- Native Telugu → **translate** to Tamil
-- English in Telugu script (పోలీస్) → **restore** to English (Police)
-- Proper nouns / places → **transliterate** to Tamil script
-
-### Stroke Mask Generation
-
-For each Telugu-classified quad:
-1. Rectify at 2× upscale.
-2. Otsu threshold on grayscale.
-3. Confidence check (between-class variance / total variance): if < 0.15, fall back to full polygon mask.
-4. Polarity check: ink = white.
-5. Dilate 2 px for anti-aliased edges.
-6. Inverse-map back to image space.
-
-**`is_telugu_quad()` v2:** Matched OCR word → erase if Telugu, skip if Devanagari or clean English. No match in pure-Telugu area → erase unconditionally (catches large fonts OCR misses). No match in mixed area → erase only if within 3.5× this quad's own height from a Telugu word centre. The quad-height-relative scale was the key fix for Hindi logo erasure.
-
-### Inpainting — TELEA
-
-Stroke mask dilated 2–3 iterations, passed to OpenCV TELEA. Inpaint radius: 5 px (text < 40 px), 8 px (< 80 px), 12 px (≥ 80 px). Post-processing pass cleans isolated CRAFT noise quads ≤ 800 px².
-
----
-
-## 🔍 Challenges During Development
-
-| # | Challenge | Status |
-|---|---|---|
-| 1 | CRAFT quad undercoverage on large 3D/stylised fonts | Accepted limitation |
-| 2 | Otsu fails on coloured ink (red on white) | Accepted limitation |
-| 3 | Ghost words from adjacent sign bleeding | Fixed — B13 pixel clipping |
-| 4 | Hindi text erased in mixed-script areas | Fixed — v2 `is_protected_non_telugu()` |
-| 5 | TELEA smear on solid-colour backgrounds | Accepted — LaMa evaluated, rejected (blurring) |
-| 6 | Cross-area OCR duplication | Fixed — IoU dedup (B4) |
-| 7 | EasyOCR confidence miscalibration on bold fonts | Accepted — threshold 0.15 |
-
----
-
-## 📊 Current Status & Future Direction
-
-### Phase 1 & 2 — Complete ✅
-
-- ✅ Detection → OCR → translation → inpainting pipeline
-- ✅ Mixed-script safety (Devanagari, English preserved)
-- ✅ Three-rule translation with full document context
-- ✅ Batch + selective CLI processing
-- ✅ Streamlit web demo on Hugging Face Spaces
-
-### Phase 3 — Tamil Text Rendering *(in progress)*
-
-<!-- IN PROGRESS — results and details will be added here once Phase 3 is complete -->
-
-- [ ] Font style estimation (weight, size, colour) from original text region
-- [ ] Tamil text rendering back onto the inpainted image matching original visual style
-- [ ] Word-level bounding box alignment
-
-### Phase 4 — Generalisation *(future)*
-
-- [ ] Additional Indic language pairs (Kannada→Tamil, Hindi→Tamil)
-- [ ] CRAFT fine-tuning on Indic scripts for large text coverage
-- [ ] Learned inpainting model for solid-colour backgrounds
-
----
-
-## 🌍 Live Demo & Deployment
-
-> **Web app URL:**
-> <!-- FILL IN AFTER DEPLOYMENT: https://huggingface.co/spaces/YOUR_USERNAME/vtt-demo -->
-
-The app runs on **Hugging Face Spaces** (free GPU tier). CRAFT is downloaded automatically at first startup — it is not bundled in this repository.
-
-For full hosting instructions see `DEPLOYMENT_GUIDE.md`.
-
----
-
-## 📋 Module Reference
-
-```
-scripts/vtt/
-├── detection.py     load_craft_boxes · deduplicate_craft_boxes
-│                    build_text_areas · merge_overlapping_areas
-│                    purify_areas · area_bbox · generate_area_mask
-├── ocr.py           enhance_for_ocr · rectify_quad · ocr_single_quad
-│                    ocr_area · reconstruct_area_sentence
-│                    deduplicate_ocr_across_areas · Telugu helpers
-├── translation.py   detect_image_type · normalize_telugu_ocr
-│                    translate_areas · IMAGE_TYPE_DESCRIPTIONS
-├── inpainting.py    build_stroke_mask_for_quad · build_stroke_mask_for_area
-│                    is_telugu_quad (v2) · is_protected_non_telugu
-│                    inpaint_area · inpaint_all_areas · inpaint_noise_boxes
-└── visualisation.py show_craft_results · visualize_areas
-                     visualize_final_areas · visualise_stroke_masks
-                     visualize_inpainted
+```text
+output/ocr_compare_selected/ocr_comparison.json
 ```
 
----
+## Next Phase
 
-## 📎 Citation
+After OCR quality is improved, the next product phase is Tamil rendering:
 
-```bibtex
-@misc{vtt2025,
-  title  = {ReBuild Vision: Visual Translation for Indic Languages},
-  author = {Manimeghanath A and Shriram and Koppesh},
-  year   = {2025},
-  url    = {https://github.com/ManimeghanathA/ReBuild-Vision-Visual-Translation-for-Indic-Languages}
-}
-```
+- Choose a Tamil font.
+- Fit translated text into the original area after correcting it.
+- Preserve line breaks and perspective where possible.
+- Estimate readable color/contrast.
+- Render onto the inpainted image.
 
----
-
-## 🙏 Acknowledgements
-
-- [CRAFT-pytorch](https://github.com/clovaai/CRAFT-pytorch) — Clova AI Research
-- [EasyOCR](https://github.com/JaidedAI/EasyOCR) — Jaided AI
-- [Sarvam AI](https://sarvam.ai) — `sarvam-m` multilingual LLM
-
----
-
-*Phase 3 (Tamil text rendering) — documentation will be added here once complete.*
+For video, the same rendered result must later become temporally stable across frames.

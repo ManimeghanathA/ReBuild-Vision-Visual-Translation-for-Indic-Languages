@@ -95,7 +95,7 @@ function renderTranslationList(translationData) {
     const item = document.createElement("div");
     item.className = "translationItem";
 
-    const summaryText = `Area ${areaNum} — ${rawOcr.length > 60 ? rawOcr.slice(0, 60) + "…" : rawOcr}`;
+    const summaryText = `Area ${areaNum} - ${rawOcr.length > 60 ? rawOcr.slice(0, 60) + "..." : rawOcr}`;
     const details = document.createElement("details");
 
     const sum = document.createElement("summary");
@@ -146,12 +146,12 @@ async function runPipeline() {
 
   // If user chose inpainting-only, skip_translate=true can work without api key.
   if (!skipTranslate && !apiKey) {
-    showError("Please enter your Sarvam AI API key (or enable 'Skip translation').");
+    showError("Please enter your Groq API key (or enable 'Skip translation').");
     return;
   }
 
   setBusy(true);
-  setStatus("Uploading & running pipeline… (this can take 30–90 seconds)");
+  setStatus("Uploading & running pipeline... (this can take 30-90 seconds)");
   showProgress(true);
   setProgress(10);
 
@@ -238,4 +238,5 @@ function init() {
 }
 
 init();
+
 
