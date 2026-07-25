@@ -1,4 +1,4 @@
-# ReBuild Vision
+# ReBuild Studio
 
 <p align="center">
   <img width="1434" height="625" alt="image" src="https://github.com/user-attachments/assets/9b40146c-9bef-4d87-a19c-1c58b119e710" />
@@ -166,7 +166,7 @@ Clone CRAFT and download its weights:
 ```powershell
 git clone https://github.com/clovaai/CRAFT-pytorch.git
 cd CRAFT-pytorch
-gdown https://drive.google.com/uc?id=1Jk4eGD7crsqCCg9C9VjCLkMN3ze8kutZ
+gdown https://drive.google.com/uc?id=1YsaQIpqePU3hFPt_4EunNsBbwNUyBRDD
 cd ..
 ```
 
