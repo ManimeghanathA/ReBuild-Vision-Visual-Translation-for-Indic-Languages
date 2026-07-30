@@ -71,6 +71,8 @@ from .visualisation import (
     visualize_inpainted,
 )
 
+from .rendering import Renderer
+
 __version__ = '2.0.0'
 __all__ = [
     # detection

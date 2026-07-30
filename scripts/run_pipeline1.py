@@ -451,7 +451,92 @@ def process_one(img_path, res_path, args, ocr_reader,renderer):
 
     return True
 
+from types import SimpleNamespace
 
+# Cache expensive models
+_ocr_reader = None
+_renderer = None
+
+
+def process_pipeline(
+    image_path: str,
+    craft_result_path: str,
+    api_key: str,
+    output_dir: str = "output",
+    skip_translate: bool = False,
+    use_gpu: bool = True,
+):
+    """
+    Run the full pipeline on a single image.
+
+    Returns
+    -------
+    dict
+        {
+            "image_stem": ...,
+            "rendered_path": ...,
+            "text_results_path": ...
+        }
+    """
+
+    global _ocr_reader, _renderer
+
+    image_stem = os.path.splitext(
+        os.path.basename(image_path)
+    )[0]
+
+    # Mimic argparse.Namespace expected by process_one()
+    args = SimpleNamespace(
+        image=image_path,
+        result=craft_result_path,
+        image_dir=None,
+        result_dir=None,
+        select=None,
+        api_key=api_key,
+        output=output_dir,
+        no_gpu=not use_gpu,
+        show=False,
+        skip_translate=skip_translate,
+    )
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Load OCR only once
+    if _ocr_reader is None:
+        print(f"Initialising PaddleOCR (gpu={use_gpu})...")
+        _ocr_reader = create_ocr_reader(use_gpu=use_gpu)
+        print("PaddleOCR ready.")
+
+    # Load renderer only once
+    if _renderer is None:
+        print("Loading renderer...")
+        _renderer = Renderer()
+        print("Renderer ready.")
+
+    ok = process_one(
+        image_path,
+        craft_result_path,
+        args,
+        _ocr_reader,
+        _renderer,
+    )
+
+    if not ok:
+        raise RuntimeError("Pipeline failed.")
+
+    return {
+        "image_stem": image_stem,
+        "rendered_path": os.path.join(
+            "render_output",
+            image_stem,
+            "rendered.jpg",
+        ),
+        "text_results_path": os.path.join(
+            output_dir,
+            image_stem,
+            "text_results.json",
+        ),
+    }
 # -- Entry point ---------------------------------------------------------------
 
 def main():
