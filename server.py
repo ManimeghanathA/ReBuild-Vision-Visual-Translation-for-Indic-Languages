@@ -504,7 +504,7 @@ HTML_UI = """<!DOCTYPE html>
 
                 <div class="form-group">
                     <label for="api-key">Groq API Key</label>
-                    <input type="text" id="api-key" name="api_key" value="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">
+                    <input type="text" id="api-key" name="api_key" value="Type here">
                 </div>
 
                 <button type="submit" id="submit-btn" class="btn-submit">Run Pipeline & Translate</button>
