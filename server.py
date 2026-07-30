@@ -39,7 +39,7 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 RENDER_OUTPUT_DIR = os.path.join(BASE_DIR, "render_output")
 SCRIPTS_DIR = os.path.join(BASE_DIR, "scripts")
 
-DEFAULT_API_KEY = "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"
+DEFAULT_API_KEY = "Type Here"
 
 os.makedirs(DATA_IMAGES_DIR, exist_ok=True)
 os.makedirs(RESULT_DIR, exist_ok=True)
